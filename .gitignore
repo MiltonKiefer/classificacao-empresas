@@ -1,0 +1,31 @@
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# Caches e arquivos de build
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.cache/
+
+# Dados (contêm informações empresariais; não versionar)
+data/raw/*
+data/interim/*
+data/processed/*
+!data/**/.gitkeep
+*.xlsx
+*.xls
+*.parquet
+
+# Modelos e previsões gerados
+models/*
+!models/.gitkeep
+outputs/predictions/*
+!outputs/predictions/.gitkeep
+
+# Editor / SO
+.vscode/
+.idea/
+.DS_Store
