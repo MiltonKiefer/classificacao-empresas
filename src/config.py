@@ -6,6 +6,7 @@ cabeçalho, basta ajustar os aliases aqui.
 """
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -30,6 +31,11 @@ PROCESSED_EMPRESAS = DATA_PROCESSED / "empresas_raiz.parquet"
 REPORT_ROTULOS_JSON = OUTPUT_REPORTS / "relatorio_rotulos.json"
 REPORT_ROTULOS_MD = OUTPUT_REPORTS / "relatorio_rotulos.md"
 
+# Arquivos gerados na Etapa 4
+FEATURES_PARQUET = DATA_PROCESSED / "features.parquet"
+REPORT_FEATURES_JSON = OUTPUT_REPORTS / "dicionario_features.json"
+REPORT_FEATURES_MD = OUTPUT_REPORTS / "dicionario_features.md"
+
 # ---------------------------------------------------------------------------
 # Fonte de dados
 # ---------------------------------------------------------------------------
@@ -40,6 +46,9 @@ EXCEL_SHEET = "Resultado da consulta"  # se não existir, usa-se a primeira aba
 # Reprodutibilidade e classes
 # ---------------------------------------------------------------------------
 RANDOM_STATE = 42
+# Data do extrato OLAP (no nome do arquivo). A idade da empresa é contada até esta data,
+# não até o dia em que o código é executado.
+REFERENCE_DATE = date(2026, 10, 6)
 
 CLASS_MEDIO = 0
 CLASS_GRANDE = 1

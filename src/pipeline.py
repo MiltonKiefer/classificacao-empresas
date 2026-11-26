@@ -5,14 +5,17 @@ Uso (a partir da raiz do projeto, com o ambiente virtual ativado):
     python -m src.pipeline --etapa 2                      # usa o único arquivo de data/raw/
     python -m src.pipeline --etapa 2 --arquivo caminho.xlsx
     python -m src.pipeline --etapa 3                      # consolida o Parquet da Etapa 2
+    python -m src.pipeline --etapa 4                      # monta a matriz de atributos
 
-Etapas implementadas: 2 (ingestão + relatório de qualidade) e 3 (CNPJ raiz e rótulos).
-Etapas 4 a 7: pendentes (ver README.md).
+Etapas implementadas: 2 (ingestão), 3 (CNPJ raiz e rótulos) e 4 (atributos).
+Etapas 5 a 7: pendentes (ver README.md).
 """
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
+
+import pandas as pd
 
 from src import config
 from src.data.load_data import load_dataset, load_interim, save_interim
@@ -21,6 +24,13 @@ from src.entities.aggregate_root import (
     aggregate_by_root,
     build_consolidation_report,
     write_consolidation,
+)
+from src.preprocessing.build_features import (
+    build_feature_frame,
+    build_feature_report,
+    feature_columns,
+    make_preprocessor,
+    write_features,
 )
 
 
@@ -79,9 +89,36 @@ def run_consolidacao() -> dict:
     return relatorio
 
 
+def run_features() -> dict:
+    """Etapa 4: monta X e y a partir da base por CNPJ raiz, sem ajustar o pré-processador."""
+    if not config.PROCESSED_EMPRESAS.is_file():
+        raise SystemExit(
+            f"Base da Etapa 3 não encontrada: {config.PROCESSED_EMPRESAS}. "
+            "Execute antes: python -m src.pipeline --etapa 3"
+        )
+    print("[1/3] Lendo empresas por CNPJ raiz...")
+    empresas = pd.read_parquet(config.PROCESSED_EMPRESAS)
+    print(f"      {len(empresas):,} empresas".replace(",", "."))
+
+    print("[2/3] Montando atributos...")
+    frame = build_feature_frame(empresas)
+    treino = frame.loc[frame["conjunto"] == "treino", feature_columns()]
+    preprocessador = make_preprocessor()
+    preprocessador.fit(treino)
+    relatorio = build_feature_report(frame, n_colunas_codificadas=len(preprocessador.get_feature_names_out()))
+
+    print("[3/3] Gravando matriz e dicionário...")
+    parquet_path, _, md_path = write_features(frame, relatorio)
+    print(f"      {parquet_path}")
+    print(f"      {md_path}")
+    print(f"      treino: {relatorio['treino']} | inferência: {relatorio['inferencia']}")
+    print(f"      colunas de X: {len(relatorio['features'])} | codificadas no treino: {relatorio['colunas_codificadas_no_treino']}")
+    return relatorio
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Pipeline de classificação de porte empresarial")
-    parser.add_argument("--etapa", type=int, default=2, help="Etapa a executar (2 ou 3)")
+    parser.add_argument("--etapa", type=int, default=2, help="Etapa a executar (2, 3 ou 4)")
     parser.add_argument("--arquivo", type=str, default=None, help="Caminho da planilha (opcional, Etapa 2)")
     args = parser.parse_args()
 
@@ -89,6 +126,8 @@ def main() -> None:
         run_ingestao(args.arquivo)
     elif args.etapa == 3:
         run_consolidacao()
+    elif args.etapa == 4:
+        run_features()
     else:
         raise SystemExit(f"Etapa {args.etapa} ainda não implementada (ver README.md).")
 

@@ -21,7 +21,7 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 | 1 | Ambiente e estrutura | ✅ Concluída |
 | 2 | Ingestão e análise exploratória | ✅ Concluída na planilha real |
 | 3 | Consolidação por CNPJ raiz e rótulos | ✅ Concluída (45 Médio e 18 Grande, sem conflito) |
-| 4 | Engenharia de atributos | ⏳ Não iniciada |
+| 4 | Engenharia de atributos | ✅ Concluída (16 colunas; funcionários ficou de fora) |
 | 5 | Treinamento e avaliação | ⏳ Não iniciada |
 | 6 | Inferência das empresas sem rótulo | ⏳ Não iniciada |
 | 7 | Exportação, testes e documentação final | ⏳ Não iniciada |
@@ -31,13 +31,12 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 1. **Ambiente virtual:** cada integrante precisa criar o seu `.venv` (ver "Como começar").
 2. **Divisão de tarefas da equipe:** não definida (ver seção Equipe).
 
-Aviso para a Etapa 4: funcionários têm cobertura de 0,08% no arquivo inteiro e 100% nas classes Médio e Grande já rotuladas. Só entra como feature se essa cobertura nas classes de treino for considerada suficiente.
+Aviso para a Etapa 4: funcionários têm cobertura de 0,08% no arquivo inteiro e 100% nas classes Médio e Grande já rotuladas. A decisão foi não usar essa coluna: ela existe nas empresas já anotadas e quase não existe nas que serão classificadas.
 
 ### ▶️ Próximo passo
-**Etapa 4** — engenharia de atributos em `src/preprocessing/build_features.py`.
-A Etapa 3 deixou 45 empresas Médio e 18 Grande no treino, nenhuma raiz com rótulo conflitante.
-A amostra continua pequena para a validação da Etapa 5. Funcionários estão preenchidos nas 63
-empresas de treino e em apenas 139 das 163.658 raízes; a ausência não foi convertida em zero.
+**Etapa 5** — treinar e avaliar o XGBoost em `src/model/train.py` e `src/model/evaluate.py`.
+O treino continua com 45 Médio e 18 Grande. O pré-processador da Etapa 4 ainda não foi ajustado:
+cada partição de validação deve chamar `fit` só nas suas linhas de treino.
 
 ---
 
@@ -64,6 +63,9 @@ python -m src.pipeline --etapa 2 --arquivo "C:/caminho/planilha.xlsx"
 
 # 5. Consolidar por CNPJ raiz (usa o Parquet da Etapa 2)
 python -m src.pipeline --etapa 3
+
+# 6. Montar a matriz de atributos (usa a base da Etapa 3)
+python -m src.pipeline --etapa 4
 ```
 
 A leitura do Excel completo pode levar alguns minutos. Saídas da Etapa 2:
@@ -78,6 +80,11 @@ Saídas da Etapa 3:
   `revisao` ou `fora_do_escopo`).
 - `outputs/reports/relatorio_rotulos.md` e `.json` — contagem por classe e regras de agregação.
 
+Saídas da Etapa 4:
+
+- `data/processed/features.parquet` — atributos de treino e inferência, antes da imputação e da codificação.
+- `outputs/reports/dicionario_features.md` e `.json` — lista do que entra no modelo e do que ficou de fora.
+
 O notebook `notebooks/analise_exploratoria.ipynb` consome essas saídas para visualização (abrir no VS Code
 depois de rodar o pipeline).
 
@@ -88,10 +95,10 @@ src/
   config.py                 # caminhos, aliases de colunas, classes, semente   [pronto]
   data/load_data.py         # leitura Excel/CSV, mapeamento e tipos            [pronto]
   data/validate_data.py     # validação de esquema e relatório de qualidade    [pronto]
-  pipeline.py               # coordenação das Etapas 2 e 3                    [parcial]
+  pipeline.py               # coordenação das Etapas 2, 3 e 4               [parcial]
   entities/aggregate_root.py        # Etapa 3 — uma linha por CNPJ raiz          [pronto]
   labeling/prepare_labels.py        # Etapa 3 — rótulo Médio/Grande              [pronto]
-  preprocessing/build_features.py   # Etapa 4 — esqueleto
+  preprocessing/build_features.py   # Etapa 4 — matriz de atributos              [pronto]
   model/{train,evaluate,predict}.py # Etapas 5 e 6 — esqueletos
   reporting/export_results.py       # Etapa 7 — esqueleto
 tests/                      # pytest; dados sintéticos em tests/helpers.py

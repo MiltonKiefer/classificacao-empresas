@@ -247,15 +247,17 @@ Legenda: `[x]` concluído/definido; `[ ]` pendente. Marque como concluído somen
 
 ### Etapa 4 — Engenharia e preparação dos atributos
 
-- [ ] Implementar a seleção das features candidatas da seção 3.4.
-- [ ] Tratar capital social conforme a regra validada na seção 3.1.
-- [ ] Criar tempo de atividade e atributos agregados de estabelecimentos.
-- [ ] Tratar categorias e valores ausentes com `ColumnTransformer` e transformadores do scikit-learn.
-- [ ] Garantir que imputadores, codificadores e demais transformações sejam ajustados somente nos dados de treino de cada partição.
-- [ ] Verificar e remover features que revelem direta ou indiretamente o rótulo.
-- [ ] Salvar a matriz de atributos e um dicionário de dados/feature list.
+- [x] Implementar a seleção das features candidatas da seção 3.4. _(16 colunas; CNAE completo trocado pela divisão de 2 dígitos)_
+- [x] Tratar capital social conforme a regra validada na seção 3.1. _(`log1p` preserva o zero e `capital_social_zero` entra junto com as outras colunas)_
+- [x] Criar tempo de atividade e atributos agregados de estabelecimentos. _(idade até 2026-10-06; quantidades já consolidadas na Etapa 3)_
+- [x] Tratar categorias e valores ausentes com `ColumnTransformer` e transformadores do scikit-learn. _(mediana, moda e one-hot com `min_frequency=2`)_
+- [x] Garantir que imputadores, codificadores e demais transformações sejam ajustados somente nos dados de treino de cada partição. _(o transformador é criado sem `fit`; a Etapa 5 ajusta cada partição)_
+- [x] Verificar e remover features que revelem direta ou indiretamente o rótulo. _(rótulo, porte oficial e funcionários ficaram de fora; funcionários só existem nas empresas já anotadas)_
+- [x] Salvar a matriz de atributos e um dicionário de dados/feature list. _(`data/processed/features.parquet`, 63 treino e 163.521 inferência; `outputs/reports/dicionario_features.md`)_
 
 **Entrega da etapa:** matriz `X` e vetor `y` documentados, reproduzíveis e sem vazamento de rótulo.
+
+> **Status (26/11/2026):** ajuste só no treino produz 29 colunas codificadas. O transformador ajustado não é gravado nesta etapa.
 
 ### Etapa 5 — Treinamento e avaliação
 
