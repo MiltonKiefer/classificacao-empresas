@@ -1,15 +1,3 @@
-"""Coordenação das etapas do projeto.
-
-Uso (a partir da raiz do projeto, com o ambiente virtual ativado):
-
-    python -m src.pipeline --etapa 2                      # usa o único arquivo de data/raw/
-    python -m src.pipeline --etapa 2 --arquivo caminho.xlsx
-    python -m src.pipeline --etapa 3                      # consolida o Parquet da Etapa 2
-    python -m src.pipeline --etapa 4                      # monta a matriz de atributos
-
-Etapas implementadas: 2 (ingestão), 3 (CNPJ raiz e rótulos) e 4 (atributos).
-Etapas 5 a 7: pendentes (ver README.md).
-"""
 from __future__ import annotations
 
 import argparse
@@ -25,6 +13,7 @@ from src.entities.aggregate_root import (
     build_consolidation_report,
     write_consolidation,
 )
+from src.model.train import executar_treinamento
 from src.preprocessing.build_features import (
     build_feature_frame,
     build_feature_report,
@@ -116,9 +105,30 @@ def run_features() -> dict:
     return relatorio
 
 
+def run_treino() -> dict:
+    """Etapa 5: valida o XGBoost nas empresas rotuladas e grava o modelo."""
+    if not config.FEATURES_PARQUET.is_file():
+        raise SystemExit(
+            f"Matriz da Etapa 4 não encontrada: {config.FEATURES_PARQUET}. "
+            "Execute antes: python -m src.pipeline --etapa 4"
+        )
+    print("[1/2] Validando com 3 folds estratificados (pode levar um minuto)...")
+    relatorio = executar_treinamento()
+    print("[2/2] Modelo e relatório gravados.")
+    print(f"      {relatorio['caminhos']['markdown']}")
+    print(f"      {relatorio['caminhos']['modelo']}")
+    print(f"      modelo salvo: {relatorio['modelo_salvo']} (profundidade {relatorio['profundidade_final']})")
+    for nome, bloco in relatorio["modelos"].items():
+        print(
+            f"      {nome}: F1-macro {bloco['f1_macro']:.3f} | "
+            f"recall Médio {bloco['recall']['Médio']:.3f} | recall Grande {bloco['recall']['Grande']:.3f}"
+        )
+    return relatorio
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Pipeline de classificação de porte empresarial")
-    parser.add_argument("--etapa", type=int, default=2, help="Etapa a executar (2, 3 ou 4)")
+    parser.add_argument("--etapa", type=int, default=2, help="Etapa a executar (2 a 5)")
     parser.add_argument("--arquivo", type=str, default=None, help="Caminho da planilha (opcional, Etapa 2)")
     args = parser.parse_args()
 
@@ -128,6 +138,8 @@ def main() -> None:
         run_consolidacao()
     elif args.etapa == 4:
         run_features()
+    elif args.etapa == 5:
+        run_treino()
     else:
         raise SystemExit(f"Etapa {args.etapa} ainda não implementada (ver README.md).")
 

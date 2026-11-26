@@ -22,7 +22,7 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 | 2 | Ingestão e análise exploratória | ✅ Concluída na planilha real |
 | 3 | Consolidação por CNPJ raiz e rótulos | ✅ Concluída (45 Médio e 18 Grande, sem conflito) |
 | 4 | Engenharia de atributos | ✅ Concluída (16 colunas; funcionários ficou de fora) |
-| 5 | Treinamento e avaliação | ⏳ Não iniciada |
+| 5 | Treinamento e avaliação | ✅ Concluída (métricas exploratórias; F1-macro 0,524) |
 | 6 | Inferência das empresas sem rótulo | ⏳ Não iniciada |
 | 7 | Exportação, testes e documentação final | ⏳ Não iniciada |
 
@@ -34,9 +34,10 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 Aviso para a Etapa 4: funcionários têm cobertura de 0,08% no arquivo inteiro e 100% nas classes Médio e Grande já rotuladas. A decisão foi não usar essa coluna: ela existe nas empresas já anotadas e quase não existe nas que serão classificadas.
 
 ### ▶️ Próximo passo
-**Etapa 5** — treinar e avaliar o XGBoost em `src/model/train.py` e `src/model/evaluate.py`.
-O treino continua com 45 Médio e 18 Grande. O pré-processador da Etapa 4 ainda não foi ajustado:
-cada partição de validação deve chamar `fit` só nas suas linhas de treino.
+**Etapa 6** — inferência das empresas sem rótulo em `src/model/predict.py`.
+O modelo gravado é o XGBoost com peso de classe (`models/porte_xgb.joblib`).
+Na validação cruzada, o F1-macro foi 0,524, o recall de Grande 0,389 e o de Médio 0,667.
+Esses números são exploratórios: são 18 empresas Grande.
 
 ---
 
@@ -66,6 +67,9 @@ python -m src.pipeline --etapa 3
 
 # 6. Montar a matriz de atributos (usa a base da Etapa 3)
 python -m src.pipeline --etapa 4
+
+# 7. Treinar e avaliar (usa a matriz da Etapa 4)
+python -m src.pipeline --etapa 5
 ```
 
 A leitura do Excel completo pode levar alguns minutos. Saídas da Etapa 2:
@@ -85,6 +89,11 @@ Saídas da Etapa 4:
 - `data/processed/features.parquet` — atributos de treino e inferência, antes da imputação e da codificação.
 - `outputs/reports/dicionario_features.md` e `.json` — lista do que entra no modelo e do que ficou de fora.
 
+Saídas da Etapa 5:
+
+- `models/porte_xgb.joblib` — XGBoost reajustado nas 63 empresas rotuladas (não versionado).
+- `outputs/reports/relatorio_avaliacao.md` e `.json` — comparação com a classe majoritária e com uma árvore, métricas e limitação da amostra.
+
 O notebook `notebooks/analise_exploratoria.ipynb` consome essas saídas para visualização (abrir no VS Code
 depois de rodar o pipeline).
 
@@ -95,11 +104,13 @@ src/
   config.py                 # caminhos, aliases de colunas, classes, semente   [pronto]
   data/load_data.py         # leitura Excel/CSV, mapeamento e tipos            [pronto]
   data/validate_data.py     # validação de esquema e relatório de qualidade    [pronto]
-  pipeline.py               # coordenação das Etapas 2, 3 e 4               [parcial]
+  pipeline.py               # coordenação das Etapas 2 a 5                  [parcial]
   entities/aggregate_root.py        # Etapa 3 — uma linha por CNPJ raiz          [pronto]
   labeling/prepare_labels.py        # Etapa 3 — rótulo Médio/Grande              [pronto]
   preprocessing/build_features.py   # Etapa 4 — matriz de atributos              [pronto]
-  model/{train,evaluate,predict}.py # Etapas 5 e 6 — esqueletos
+  model/train.py                    # Etapa 5 — XGBoost e baselines              [pronto]
+  model/evaluate.py                 # Etapa 5 — métricas da validação            [pronto]
+  model/predict.py                  # Etapa 6 — esqueleto
   reporting/export_results.py       # Etapa 7 — esqueleto
 tests/                      # pytest; dados sintéticos em tests/helpers.py
 docs/                       # guia de desenvolvimento (checklist por etapa)

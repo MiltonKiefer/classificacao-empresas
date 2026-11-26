@@ -1,0 +1,249 @@
+{
+  "n_treino": 63,
+  "contagem": {
+    "Médio": 45,
+    "Grande": 18
+  },
+  "validacao": "StratifiedKFold com 3 folds, embaralhado, semente 42",
+  "calibrador_aplicado": false,
+  "calibracao": "Não há amostra suficiente para avaliar ou ajustar um calibrador de probabilidade. O Brier é só um registro; a probabilidade não deve ser chamada de confiança.",
+  "modelo_salvo": "xgb_ponderado",
+  "modelos": {
+    "maioria": {
+      "f1_macro": 0.4166666666666667,
+      "acuracia_balanceada": 0.5,
+      "precisao": {
+        "Médio": 0.7142857142857143,
+        "Grande": 0.0
+      },
+      "recall": {
+        "Médio": 1.0,
+        "Grande": 0.0
+      },
+      "f1": {
+        "Médio": 0.8333333333333334,
+        "Grande": 0.0
+      },
+      "suporte": {
+        "Médio": 45,
+        "Grande": 18
+      },
+      "matriz_confusao": [
+        [
+          45,
+          0
+        ],
+        [
+          18,
+          0
+        ]
+      ],
+      "brier": 0.2857142857142857,
+      "recall_grande_por_fold": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "arvore": {
+      "f1_macro": 0.4493006993006993,
+      "acuracia_balanceada": 0.49444444444444446,
+      "precisao": {
+        "Médio": 0.711864406779661,
+        "Grande": 0.25
+      },
+      "recall": {
+        "Médio": 0.9333333333333333,
+        "Grande": 0.05555555555555555
+      },
+      "f1": {
+        "Médio": 0.8076923076923077,
+        "Grande": 0.09090909090909091
+      },
+      "suporte": {
+        "Médio": 45,
+        "Grande": 18
+      },
+      "matriz_confusao": [
+        [
+          42,
+          3
+        ],
+        [
+          17,
+          1
+        ]
+      ],
+      "brier": 0.2659718732585839,
+      "recall_grande_por_fold": [
+        0.0,
+        0.16666666666666666,
+        0.0
+      ]
+    },
+    "xgb": {
+      "f1_macro": 0.5079796264855687,
+      "acuracia_balanceada": 0.5111111111111111,
+      "precisao": {
+        "Médio": 0.72,
+        "Grande": 0.3076923076923077
+      },
+      "recall": {
+        "Médio": 0.8,
+        "Grande": 0.2222222222222222
+      },
+      "f1": {
+        "Médio": 0.7578947368421053,
+        "Grande": 0.25806451612903225
+      },
+      "suporte": {
+        "Médio": 45,
+        "Grande": 18
+      },
+      "matriz_confusao": [
+        [
+          36,
+          9
+        ],
+        [
+          14,
+          4
+        ]
+      ],
+      "brier": 0.2471299271577768,
+      "recall_grande_por_fold": [
+        0.0,
+        0.3333333333333333,
+        0.3333333333333333
+      ]
+    },
+    "xgb_ponderado": {
+      "f1_macro": 0.5238372093023256,
+      "acuracia_balanceada": 0.5277777777777778,
+      "precisao": {
+        "Médio": 0.7317073170731707,
+        "Grande": 0.3181818181818182
+      },
+      "recall": {
+        "Médio": 0.6666666666666666,
+        "Grande": 0.3888888888888889
+      },
+      "f1": {
+        "Médio": 0.6976744186046512,
+        "Grande": 0.35
+      },
+      "suporte": {
+        "Médio": 45,
+        "Grande": 18
+      },
+      "matriz_confusao": [
+        [
+          30,
+          15
+        ],
+        [
+          11,
+          7
+        ]
+      ],
+      "brier": 0.2614521777857368,
+      "recall_grande_por_fold": [
+        0.3333333333333333,
+        0.5,
+        0.3333333333333333
+      ]
+    }
+  },
+  "limitacao": "Amostra de treino pequena, em especial a classe Grande. As métricas são exploratórias e não sustentam uma conclusão forte de generalização.",
+  "hiperparametros": "XGBoost com objetivo binary:logistic, 80 árvores, learning_rate 0,1 e min_child_weight 2. A profundidade (2 ou 3) é escolhida por uma validação estratificada interna, só com as linhas de treino de cada fold. O peso da classe Grande, quando usado, também é contado só nesse treino. Não houve oversampling.",
+  "profundidade_final": 2,
+  "features": [
+    "capital_social_log",
+    "capital_social_zero",
+    "qtd_estabelecimentos",
+    "qtd_cnaes_distintos",
+    "qtd_divisoes_cnae",
+    "qtd_situacao_ativa",
+    "qtd_situacao_baixada",
+    "qtd_situacao_inapta",
+    "qtd_situacao_suspensa",
+    "qtd_situacao_nula",
+    "qtd_situacao_outra",
+    "tempo_atividade_anos",
+    "tem_matriz",
+    "natureza_juridica",
+    "divisao_cnae",
+    "situacao_matriz"
+  ],
+  "classes": {
+    "0": "Médio",
+    "1": "Grande"
+  },
+  "regra_capital_social_zero": "zero_nao_define_porte",
+  "referencia_temporal": "2026-10-06",
+  "cnpj_raiz_treino": [
+    "00096631",
+    "00125890",
+    "00148237",
+    "00207218",
+    "00341310",
+    "00388547",
+    "00640794",
+    "01024192",
+    "01068020",
+    "01086932",
+    "01216062",
+    "01288200",
+    "01379851",
+    "01420682",
+    "02214604",
+    "03174004",
+    "03174517",
+    "03763491",
+    "03812505",
+    "03854172",
+    "04244590",
+    "04385585",
+    "05900342",
+    "06320034",
+    "07206816",
+    "07478417",
+    "07551590",
+    "08782693",
+    "10917143",
+    "13027628",
+    "13215959",
+    "13574736",
+    "13578869",
+    "13647862",
+    "13948500",
+    "13959986",
+    "14100265",
+    "14306831",
+    "14399448",
+    "14583041",
+    "14680219",
+    "14828958",
+    "14998371",
+    "15111297",
+    "15122187",
+    "15153265",
+    "15191786",
+    "15206469",
+    "15231897",
+    "15257819",
+    "15659931",
+    "15692726",
+    "16104523",
+    "16167009",
+    "16273641",
+    "16347049",
+    "16365025",
+    "29739737",
+    "33829938",
+    "33841727",
+    "33913872",
+    "34375501",
+    "63242473"
+  ]
+}

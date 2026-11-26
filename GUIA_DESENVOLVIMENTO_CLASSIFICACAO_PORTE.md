@@ -261,22 +261,24 @@ Legenda: `[x]` concluído/definido; `[ ]` pendente. Marque como concluído somen
 
 ### Etapa 5 — Treinamento e avaliação
 
-- [ ] Criar um baseline simples para comparação (por exemplo, classe majoritária e/ou modelo de árvore simples).
-- [ ] Implementar `XGBClassifier` com objetivo binário (`binary:logistic`).
-- [ ] Avaliar distribuição das classes após consolidação; não assumir que os números em nível de estabelecimento são os números finais.
-- [ ] Escolher estratégia de validação compatível com o tamanho real da amostra.
-- [ ] Comparar modelo sem pesos e com pesos de classe, se o desbalanceamento justificar.
-- [ ] Ajustar hiperparâmetros somente dentro dos dados de treinamento/validação.
-- [ ] Calcular F1-macro, acurácia balanceada, precisão/recall por classe e matriz de confusão.
-- [ ] Analisar especialmente o recall de `Grande`, sem ignorar o desempenho em `Médio`.
-- [ ] Avaliar a calibração das probabilidades; só aplicar calibrador se houver amostra suficiente para uma avaliação minimamente estável.
-- [ ] Salvar modelo, configuração, lista de features, métricas e versão dos dados.
+- [x] Criar um baseline simples para comparação (por exemplo, classe majoritária e/ou modelo de árvore simples). _(maioria: F1-macro 0,417; árvore de profundidade 3: 0,449)_
+- [x] Implementar `XGBClassifier` com objetivo binário (`binary:logistic`).
+- [x] Avaliar distribuição das classes após consolidação; não assumir que os números em nível de estabelecimento são os números finais. _(45 Médio e 18 Grande, os mesmos depois da Etapa 3)_
+- [x] Escolher estratégia de validação compatível com o tamanho real da amostra. _(StratifiedKFold com 3 folds e semente 42; cada teste fica com 6 Grande)_
+- [x] Comparar modelo sem pesos e com pesos de classe, se o desbalanceamento justificar. _(sem peso: F1-macro 0,508 e recall Grande 0,222; com peso: 0,524 e 0,389)_
+- [x] Ajustar hiperparâmetros somente dentro dos dados de treinamento/validação. _(profundidade 2 ou 3 escolhida numa validação interna de cada fold)_
+- [x] Calcular F1-macro, acurácia balanceada, precisão/recall por classe e matriz de confusão. _(`outputs/reports/relatorio_avaliacao.md`)_
+- [x] Analisar especialmente o recall de `Grande`, sem ignorar o desempenho em `Médio`. _(Grande 0,389, variando 0,33–0,50 entre folds; Médio 0,667 no modelo com peso)_
+- [x] Avaliar a calibração das probabilidades; só aplicar calibrador se houver amostra suficiente para uma avaliação minimamente estável. _(calibrador não aplicado; o Brier fica só registrado)_
+- [x] Salvar modelo, configuração, lista de features, métricas e versão dos dados. _(`models/porte_xgb.joblib`, variante `xgb_ponderado`, profundidade 2, reajustado nas 63 empresas)_
 
-**Atenção ao tamanho da amostra:** a inspeção inicial encontrou apenas 18 registros `Grande` e 45 `Média` antes da consolidação por raiz. Isso é uma amostra pequena, especialmente para a classe Grande. Após consolidar, a quantidade pode diminuir. Uma divisão hold-out pode deixar pouquíssimos exemplos de Grande no teste. Portanto, primeiro conte as empresas únicas por classe; depois escolha a validação. Uma validação estratificada de 3 folds pode ser um ponto de partida, desde que cada classe tenha exemplos suficientes em cada fold. Se a amostra não permitir uma avaliação confiável, documentar a limitação e evitar apresentar as métricas como evidência forte de generalização.
+**Atenção ao tamanho da amostra:** a validação confirmou 45 Médio e 18 Grande por CNPJ raiz. A validação estratificada de 3 folds deixa 6 Grande em cada teste. As métricas são exploratórias e não são evidência forte de generalização.
 
-Não aplicar oversampling ou qualquer balanceamento antes da divisão dos folds. Se for testado, deve ocorrer apenas dentro de cada partição de treinamento. O balanceamento não cria informação nova e não resolve a escassez de exemplos reais.
+Não foi aplicado oversampling. O peso da classe Grande, quando usado, é contado só dentro do treino de cada fold.
 
 **Entrega da etapa:** modelo avaliado, métricas registradas e limitações explicitadas.
+
+> **Status (26/11/2026):** o modelo gravado é o XGBoost com peso. Na validação cruzada, F1-macro 0,524, recall Grande 0,389 e recall Médio 0,667. A matriz de confusão acertou 7 das 18 Grande e 30 das 45 Médio.
 
 ### Etapa 6 — Inferência das empresas sem rótulo
 
