@@ -44,14 +44,16 @@ CLASS_NAMES = {CLASS_MEDIO: "Médio", CLASS_GRANDE: "Grande"}
 # Colunas da planilha
 # ---------------------------------------------------------------------------
 # nome lógico -> possíveis cabeçalhos (comparados após normalização: sem acentos,
-# minúsculas, pontuação -> espaço). ⚠ PENDENTE: confirmar com a planilha real.
+# minúsculas, pontuação -> espaço). CNAE e telefone conferidos na planilha real.
 COLUMN_ALIASES: dict[str, list[str]] = {
     "cnpj": ["cnpj", "cnpj completo", "cnpj estabelecimento"],
     "cnpj_raiz": ["cnpj raiz", "cnpj basico", "raiz cnpj", "raiz"],
     "razao_social": ["razao social", "nome empresarial", "razao"],
     "capital_social": ["capital social"],
     "natureza_juridica": ["natureza juridica", "cod natureza juridica", "codigo natureza juridica"],
-    "cnae_principal": ["cnae fiscal principal", "cnae principal", "cnae fiscal", "cnae"],
+    "cnae_principal": [
+        "codigo cnae fiscal principal", "cnae fiscal principal", "cnae principal", "cnae fiscal", "cnae",
+    ],
     "matriz_filial": ["matriz filial", "identificador matriz filial", "tipo estabelecimento"],
     "situacao_cadastral": ["situacao cadastral", "situacao"],
     "data_inicio": [
@@ -65,7 +67,7 @@ COLUMN_ALIASES: dict[str, list[str]] = {
     "porte_obs": ["obs porte sa3"],  # fonte do rótulo Médio/Grande
     "cep": ["cep"],
     "email": ["email", "e mail", "correio eletronico"],
-    "telefone": ["telefone", "telefone 1", "ddd telefone 1"],
+    "telefone": ["telefone1", "telefone", "telefone 1", "ddd telefone 1"],
 }
 
 # Campos sem os quais a Etapa 2 não faz sentido
@@ -92,8 +94,12 @@ DATE_FIELDS = ["data_inicio"]
 NEVER_FEATURES = ["cnpj", "cnpj_raiz", "razao_social", "email", "telefone", "porte_obs", "porte_oficial"]
 
 # ---------------------------------------------------------------------------
-# Decisões ainda pendentes (ver README / guia)
+# Capital social igual a zero
 # ---------------------------------------------------------------------------
-# Semântica do capital social igual a zero: "pendente" até confirmação com a fonte.
-# Valores possíveis quando confirmado: "nao_informado" | "valor_real".
-CAPITAL_SOCIAL_ZERO_RULE = "pendente"
+# Regra adotada em 26/11/2026.
+# Um valor 0 em uma métrica — capital social é o caso confirmado na planilha —
+# não é evidência de pequeno porte e não classifica a empresa sozinho.
+# O zero é preservado na base (não vira ausência nem NaN). A estimativa de
+# Médio/Grande considera o conjunto das métricas disponíveis.
+# "pendente" reabre o aviso no relatório de qualidade.
+CAPITAL_SOCIAL_ZERO_RULE = "zero_nao_define_porte"

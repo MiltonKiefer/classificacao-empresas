@@ -29,13 +29,12 @@ def test_relatorio_de_qualidade(sample_xlsx, sample_df):
     assert rep["chaves"]["raizes_com_mais_de_um_estabelecimento"] > 0
     assert rep["chaves"]["cnpj_com_tamanho_invalido"] == 0
     cap = rep["capital_social"]
-    assert cap["zeros"] > 0 and cap["regra_zero_adotada"] == "pendente"
+    assert cap["zeros"] > 0 and cap["regra_zero_adotada"] == "zero_nao_define_porte"
     assert "por_grupo_de_rotulo" in cap["evidencias_semantica_zero"]
     assert 0 < rep["funcionarios"]["cobertura_pct"] < 100
     assert rep["rotulos_porte_obs"]["registros_por_grupo"]["medio"] > 0
     assert rep["rotulos_porte_obs"]["registros_por_grupo"]["grande"] > 0
-    # pendência da semântica do zero sempre sinalizada enquanto não decidida
-    assert any("capital social = 0" in p for p in rep["pendencias"])
+    assert not any("capital social = 0" in p for p in rep["pendencias"])
     json.dumps(rep)  # deve ser serializável
 
 

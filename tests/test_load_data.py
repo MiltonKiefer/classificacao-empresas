@@ -29,6 +29,20 @@ def test_find_raw_file_erros(tmp_path):
         ld.find_raw_file(raw_dir=tmp_path)
 
 
+def test_cabecalhos_da_planilha_real_mapeiam_cnae_e_telefone():
+    df = pd.DataFrame({
+        "Codigo Cnae Fiscal Principal": ["0111301"],
+        "Telefone1": ["7133334444"],
+        "CNPJ": ["00000001000191"],
+        "Obs Porte Sa3": ["Grande"],
+    })
+    mapped, info = ld.map_columns(df)
+    assert "cnae_principal" in mapped.columns
+    assert "telefone" in mapped.columns
+    assert "cnae_principal" not in info["campos_logicos_ausentes"]
+    assert "telefone" not in info["campos_logicos_ausentes"]
+
+
 def test_leitura_xlsx_mapeia_colunas_e_preserva_zeros(sample_xlsx):
     df, info = ld.load_dataset(path=sample_xlsx)
     assert info["aba"] == "Resultado da consulta"

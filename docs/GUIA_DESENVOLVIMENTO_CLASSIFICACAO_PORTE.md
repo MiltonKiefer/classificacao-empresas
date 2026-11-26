@@ -123,14 +123,16 @@ A base contém majoritariamente empresas classificadas oficialmente como `DEMAIS
 
 - Não interpretar automaticamente capital social igual a zero como evidência de empresa pequena ou de baixo porte.
 - Não criar uma regra do tipo `capital_social == 0` implica Médio/Grande ou Pequena/Micro.
-- Preservar o valor original para auditoria e investigar a semântica de zero na fonte.
-- Se a validação confirmar que zero representa ausência de declaração, tratar zero como valor não informado na variável numérica do modelo e criar uma flag, por exemplo `capital_social_nao_informado`.
-- Separar valores ausentes (`NaN`) de zeros observados até que a regra de interpretação esteja confirmada.
+- Preservar o valor original para auditoria. O zero permanece distinto de ausência (`NaN`).
+- Se a fonte confirmar depois que zero representa falta de declaração, tratar zero como valor não informado na variável numérica do modelo e criar uma flag, por exemplo `capital_social_nao_informado`. Isso não muda a regra de julgamento abaixo.
+- Separar valores ausentes (`NaN`) de zeros observados. A regra adotada não converte zero em ausência.
 - Se houver transformação logarítmica, aplicá-la somente depois do tratamento de zero/ausência, por exemplo `log1p` sobre valores válidos.
 - Fazer imputação, quando necessária, dentro do pipeline de treinamento do scikit-learn, para evitar vazamento entre treino e validação.
 - Comparar o desempenho com e sem capital social; sua contribuição deve ser avaliada empiricamente.
 
 O modelo deverá combinar diferentes dimensões da empresa. A ausência de capital social não pode impedir a classificação quando os outros atributos estiverem disponíveis.
+
+**Regra registrada (26/11/2026):** `config.CAPITAL_SOCIAL_ZERO_RULE = "zero_nao_define_porte"`. Um valor 0 em uma métrica — capital social é o caso medido na planilha — não é evidência de pequeno porte e não classifica a empresa sozinho. A estimativa de Médio ou Grande considera o conjunto das métricas disponíveis.
 
 ### 3.2 Consolidação pelo CNPJ raiz
 
@@ -195,10 +197,10 @@ Legenda: `[x]` concluído/definido; `[ ]` pendente. Marque como concluído somen
 
 ### Etapa 1 — Preparação do ambiente e estrutura
 
-- [x] Criar o repositório Git e a estrutura de diretórios apresentada na seção 1.2. _(repositório local com commit inicial; falta criar/associar o remoto, ex.: GitHub)_
+- [x] Criar o repositório Git e a estrutura de diretórios apresentada na seção 1.2. _(remoto: `https://github.com/MiltonKiefer/classificacao-empresas`, branch `dev`)_
 - [ ] Criar e ativar ambiente virtual Python. ⚠ **Pendente por pessoa:** cada integrante cria o seu `.venv` localmente (comandos no README); o ambiente não é versionado.
 - [x] Criar `requirements.txt` com dependências e versões utilizadas. _(validado com Python 3.12)_
-- [x] Criar `config.py` com caminhos, nomes das colunas, classes e semente aleatória. _(⚠ nomes das colunas são aliases presumidos; confirmar com a planilha real)_
+- [x] Criar `config.py` com caminhos, nomes das colunas, classes e semente aleatória. _(aliases de CNAE e telefone conferidos na planilha real em 26/11/2026)_
 - [x] Configurar `.gitignore` para não versionar bases brutas, arquivos grandes, ambientes virtuais, caches e modelos gerados.
 - [x] Criar testes básicos para configuração e leitura de arquivos. _(`tests/test_config.py`, `tests/test_load_data.py`)_
 
@@ -206,18 +208,18 @@ Legenda: `[x]` concluído/definido; `[ ]` pendente. Marque como concluído somen
 
 - [x] Localizar e inspecionar inicialmente a planilha de referência.
 - [x] Identificar a aba, o volume aproximado de linhas/colunas e campos relevantes.
-- [x] Implementar leitura reproduzível da planilha em `load_data.py`. _(⚠ testado apenas com dados sintéticos; a planilha real não estava disponível)_
-- [x] Preservar CNPJ, CNPJ raiz, CNAE e CEP como strings, sem perder zeros à esquerda. _(natureza jurídica também)_ _(⚠ testado apenas com dados sintéticos; a planilha real não estava disponível)_
-- [x] Implementar validações de esquema, tipos, chaves, duplicidades e valores ausentes. _(`validate_data.py`)_ _(⚠ testado apenas com dados sintéticos; a planilha real não estava disponível)_
-- [x] Gerar relatório de qualidade: nulos, zeros, distribuição de categorias, datas inválidas e valores extremos. _(código pronto: `outputs/reports/relatorio_qualidade.md/.json`; ⚠ ainda não gerado sobre a planilha real)_
-- [x] Medir especificamente a cobertura de capital social e de quantidade de funcionários. _(código pronto, incluindo cobertura por grupo de rótulo; ⚠ números reais pendentes)_
-- [ ] Confirmar a semântica dos zeros de capital social e registrar a regra adotada. ⚠ **Pendente:** o relatório já traz evidências (% de zeros por grupo de rótulo e por natureza jurídica), mas a decisão depende da planilha real e/ou da fonte. Registrar em `config.CAPITAL_SOCIAL_ZERO_RULE` (hoje `"pendente"`).
-- [x] Salvar os dados intermediários em Parquet. _(`data/interim/estabelecimentos.parquet`; ⚠ gerar com a planilha real)_
-- [ ] **(Novo)** Copiar a planilha para `data/raw/`, executar `python -m src.pipeline --etapa 2`, revisar o relatório e ajustar `COLUMN_ALIASES` se houver colunas não mapeadas. ⚠ **Pendente — bloqueia o fechamento da Etapa 2.**
+- [x] Implementar leitura reproduzível da planilha em `load_data.py`. _(executado na planilha real em 26/11/2026: 180.628 linhas)_
+- [x] Preservar CNPJ, CNPJ raiz, CNAE e CEP como strings, sem perder zeros à esquerda. _(natureza jurídica também; conferido na planilha real)_
+- [x] Implementar validações de esquema, tipos, chaves, duplicidades e valores ausentes. _(`validate_data.py`; relatório da planilha real sem erros de esquema)_
+- [x] Gerar relatório de qualidade: nulos, zeros, distribuição de categorias, datas inválidas e valores extremos. _(`outputs/reports/relatorio_qualidade.md/.json`, gerado em 26/11/2026 sobre a planilha real)_
+- [x] Medir especificamente a cobertura de capital social e de quantidade de funcionários. _(capital: 81,32% zeros e 0 nulos; funcionários: 0,08% no total e 100% nas classes Médio e Grande)_
+- [x] Confirmar a semântica dos zeros de capital social e registrar a regra adotada. _(`config.CAPITAL_SOCIAL_ZERO_RULE = "zero_nao_define_porte"`: zero não é evidência de pequeno porte; a estimativa usa o conjunto das métricas; o valor 0 é preservado)_
+- [x] Salvar os dados intermediários em Parquet. _(`data/interim/estabelecimentos.parquet` regenerado com a planilha real)_
+- [x] Copiar a planilha para `data/raw/`, executar `python -m src.pipeline --etapa 2`, revisar o relatório e ajustar `COLUMN_ALIASES`. _(alias `codigo cnae fiscal principal` e `telefone1`; `cnae_principal` reconhecido: 1.076 valores, 0 nulos)_
 
 **Entrega da etapa:** relatório exploratório reproduzível e arquivos intermediários validados.
 
-> **Status (23/11/2026):** código implementado e testado (24 testes com dados sintéticos, pipeline executado com ~160 mil linhas sintéticas em ~30 s). A entrega só é considerada fechada após a execução na planilha real (item **Novo** acima) e a decisão sobre capital social = 0.
+> **Status (26/11/2026):** Etapa 2 fechada na planilha real (180.628 linhas, 25 testes). O relatório não aponta erro de esquema. Para a Etapa 4 permanece o aviso de cobertura de funcionários (0,08% no arquivo; 100% nas classes Médio e Grande já rotuladas).
 
 ### Etapa 3 — Consolidação por CNPJ raiz e preparação dos rótulos
 
