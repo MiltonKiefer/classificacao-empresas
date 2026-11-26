@@ -19,8 +19,8 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 |---|---|---|
 | 0 | Definição do escopo | ✅ Concluída (falta só registrar divisão de tarefas da equipe) |
 | 1 | Ambiente e estrutura | ✅ Concluída |
-| 2 | Ingestão e análise exploratória | ✅ Concluída na planilha real (26/11/2026) |
-| 3 | Consolidação por CNPJ raiz e rótulos | ⏳ Não iniciada |
+| 2 | Ingestão e análise exploratória | ✅ Concluída na planilha real |
+| 3 | Consolidação por CNPJ raiz e rótulos | ✅ Concluída (45 Médio e 18 Grande, sem conflito) |
 | 4 | Engenharia de atributos | ⏳ Não iniciada |
 | 5 | Treinamento e avaliação | ⏳ Não iniciada |
 | 6 | Inferência das empresas sem rótulo | ⏳ Não iniciada |
@@ -34,11 +34,10 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 Aviso para a Etapa 4: funcionários têm cobertura de 0,08% no arquivo inteiro e 100% nas classes Médio e Grande já rotuladas. Só entra como feature se essa cobertura nas classes de treino for considerada suficiente.
 
 ### ▶️ Próximo passo
-**Etapa 3** — implementar `src/entities/aggregate_root.py` e `src/labeling/prepare_labels.py`:
-consolidar por CNPJ raiz, mapear `Obs Porte Sa3` → Médio = 0 / Grande = 1, separar raízes com rótulos
-conflitantes (excluí-las do treino, sem decidir por maioria) e contar quantas empresas rotuladas sobram por classe.
-Essa contagem define a estratégia de validação da Etapa 5 (a amostra é pequena: ~45 Média e ~18 Grande antes
-da consolidação).
+**Etapa 4** — engenharia de atributos em `src/preprocessing/build_features.py`.
+A Etapa 3 deixou 45 empresas Médio e 18 Grande no treino, nenhuma raiz com rótulo conflitante.
+A amostra continua pequena para a validação da Etapa 5. Funcionários estão preenchidos nas 63
+empresas de treino e em apenas 139 das 163.658 raízes; a ausência não foi convertida em zero.
 
 ---
 
@@ -62,6 +61,9 @@ python -m pytest
 python -m src.pipeline --etapa 2
 # ou apontando o arquivo:
 python -m src.pipeline --etapa 2 --arquivo "C:/caminho/planilha.xlsx"
+
+# 5. Consolidar por CNPJ raiz (usa o Parquet da Etapa 2)
+python -m src.pipeline --etapa 3
 ```
 
 A leitura do Excel completo pode levar alguns minutos. Saídas da Etapa 2:
@@ -69,6 +71,12 @@ A leitura do Excel completo pode levar alguns minutos. Saídas da Etapa 2:
 - `data/interim/estabelecimentos.parquet` — dados padronizados, uma linha por estabelecimento.
 - `outputs/reports/relatorio_qualidade.md` e `.json` — qualidade dos dados, cobertura de capital social e
   funcionários, evidências sobre capital = 0, distribuição de rótulos e pendências automáticas.
+
+Saídas da Etapa 3:
+
+- `data/processed/empresas_raiz.parquet` — uma linha por CNPJ raiz, com o conjunto (`treino`, `inferencia`,
+  `revisao` ou `fora_do_escopo`).
+- `outputs/reports/relatorio_rotulos.md` e `.json` — contagem por classe e regras de agregação.
 
 O notebook `notebooks/analise_exploratoria.ipynb` consome essas saídas para visualização (abrir no VS Code
 depois de rodar o pipeline).
@@ -80,9 +88,9 @@ src/
   config.py                 # caminhos, aliases de colunas, classes, semente   [pronto]
   data/load_data.py         # leitura Excel/CSV, mapeamento e tipos            [pronto]
   data/validate_data.py     # validação de esquema e relatório de qualidade    [pronto]
-  pipeline.py               # coordenação (hoje só a Etapa 2)                  [parcial]
-  entities/aggregate_root.py        # Etapa 3 — esqueleto
-  labeling/prepare_labels.py        # Etapa 3 — esqueleto
+  pipeline.py               # coordenação das Etapas 2 e 3                    [parcial]
+  entities/aggregate_root.py        # Etapa 3 — uma linha por CNPJ raiz          [pronto]
+  labeling/prepare_labels.py        # Etapa 3 — rótulo Médio/Grande              [pronto]
   preprocessing/build_features.py   # Etapa 4 — esqueleto
   model/{train,evaluate,predict}.py # Etapas 5 e 6 — esqueletos
   reporting/export_results.py       # Etapa 7 — esqueleto

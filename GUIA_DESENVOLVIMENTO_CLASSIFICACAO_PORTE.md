@@ -151,6 +151,15 @@ Regras iniciais a implementar e validar:
 
 Se houver mais de um rótulo válido para a mesma raiz (`Médio` em um registro e `Grande` em outro), não escolher um por maioria automaticamente. Registrar o conflito e excluir essa raiz do treinamento até que exista um critério fundamentado para resolvê-lo.
 
+**Regras adotadas (26/11/2026), depois da inspeção da planilha real:**
+
+- Capital social e natureza jurídica não variam dentro da raiz nesta base. O valor único é mantido, inclusive capital zero. Se aparecer divergência, usa-se o valor da matriz e a raiz fica marcada; sem matriz, o campo fica ausente.
+- CNAE principal é o da matriz. Sem matriz (8.227 raízes), usa-se o estabelecimento de início mais antigo. Também se guardam a quantidade de CNAEs e de divisões.
+- A situação usada como atributo da empresa é a da matriz, junto com as contagens por situação. Filial não ocupa o lugar de uma matriz ausente.
+- A idade da empresa é a menor data de início válida. A data da matriz fica preservada; em 30 raízes uma filial é mais antiga.
+- Funcionários só são copiados quando o valor é único. Ausência continua nula. Na base consolidada, 139 raízes têm o dado e as 63 de treino estão todas preenchidas; a Etapa 4 decide o uso no modelo.
+- Na planilha real não houve raiz com Médio e Grande ao mesmo tempo. O código mesmo assim separa esse caso em `revisao`, sem rótulo.
+
 ### 3.3 Construção do rótulo binário
 
 A coluna de origem do rótulo é `Obs Porte Sa3`. Padronizar grafias e espaços, depois mapear:
@@ -223,16 +232,18 @@ Legenda: `[x]` concluído/definido; `[ ]` pendente. Marque como concluído somen
 
 ### Etapa 3 — Consolidação por CNPJ raiz e preparação dos rótulos
 
-- [ ] Implementar agrupamento de estabelecimentos por CNPJ raiz.
-- [ ] Definir e documentar a agregação de cada campo (matriz, filiais, capital social, CNAE, situação e datas).
-- [ ] Criar atributos agregados, começando pela quantidade de estabelecimentos.
-- [ ] Identificar raízes com informações contraditórias.
-- [ ] Mapear `Obs Porte Sa3` para as classes Médio e Grande.
-- [ ] Detectar raízes com rótulos conflitantes e separá-las para revisão.
-- [ ] Gerar contagem final de empresas rotuladas por classe após agregação.
-- [ ] Separar empresas com rótulo conhecido das empresas elegíveis à inferência.
+- [x] Implementar agrupamento de estabelecimentos por CNPJ raiz. _(`src/entities/aggregate_root.py`; 180.628 estabelecimentos → 163.658 raízes)_
+- [x] Definir e documentar a agregação de cada campo (matriz, filiais, capital social, CNAE, situação e datas). _(seção 3.2 e `outputs/reports/relatorio_rotulos.md`)_
+- [x] Criar atributos agregados, começando pela quantidade de estabelecimentos.
+- [x] Identificar raízes com informações contraditórias. _(capital 0, natureza 0, CNAE 2.708, filial mais antiga que a matriz 30, rótulos 0)_
+- [x] Mapear `Obs Porte Sa3` para as classes Médio e Grande. _(`src/labeling/prepare_labels.py`; Médio = 0, Grande = 1)_
+- [x] Detectar raízes com rótulos conflitantes e separá-las para revisão. _(nenhuma raiz com Médio e Grande ao mesmo tempo)_
+- [x] Gerar contagem final de empresas rotuladas por classe após agregação. _(treino: 45 Médio e 18 Grande)_
+- [x] Separar empresas com rótulo conhecido das empresas elegíveis à inferência. _(treino 63, inferência 163.521, fora do escopo 74 — Micro e Pequena —, revisão 0)_
 
 **Entrega da etapa:** uma base por CNPJ raiz, com rótulos validados e conjuntos claramente separados.
+
+> **Status (26/11/2026):** base em `data/processed/empresas_raiz.parquet`. A contagem por raiz não reduziu as classes: continuam 45 Médio e 18 Grande, sem conflito. Essa é a amostra da Etapa 5.
 
 ### Etapa 4 — Engenharia e preparação dos atributos
 
@@ -291,7 +302,7 @@ Não aplicar oversampling ou qualquer balanceamento antes da divisão dos folds.
 ## 5. Estratégia de validação e limitações
 
 1. **Uma empresa, uma observação:** consolidar por CNPJ raiz antes de separar treino e validação. Assim, estabelecimentos da mesma empresa não aparecem em partições diferentes.
-2. **Amostra reduzida:** os 63 registros Médio/Grande identificados inicialmente não garantem 63 empresas distintas nem 63 rótulos consistentes após a agregação. A avaliação deve usar a contagem final por raiz.
+2. **Amostra reduzida:** depois da consolidação por raiz, o treino ficou com 63 empresas e rótulos consistentes: 45 Médio e 18 Grande. Nenhuma raiz teve Médio e Grande ao mesmo tempo. A avaliação da Etapa 5 deve usar essa contagem, não a contagem por estabelecimento.
 3. **Desbalanceamento:** acompanhar a proporção Médio/Grande e apresentar métricas por classe, não somente acurácia.
 4. **Probabilidade não é garantia:** a probabilidade prevista pelo XGBoost não deve ser chamada automaticamente de confiança confiável. Calibração e limiares de revisão precisam ser avaliados; com poucos exemplos, a incerteza deve ser declarada.
 5. **Escopo das conclusões:** enquanto a base rotulada for pequena, as previsões devem ser tratadas como estimativas exploratórias, não como classificação oficial ou validação definitiva do porte empresarial.

@@ -25,6 +25,11 @@ INTERIM_ESTABELECIMENTOS = DATA_INTERIM / "estabelecimentos.parquet"
 REPORT_QUALIDADE_JSON = OUTPUT_REPORTS / "relatorio_qualidade.json"
 REPORT_QUALIDADE_MD = OUTPUT_REPORTS / "relatorio_qualidade.md"
 
+# Arquivos gerados na Etapa 3
+PROCESSED_EMPRESAS = DATA_PROCESSED / "empresas_raiz.parquet"
+REPORT_ROTULOS_JSON = OUTPUT_REPORTS / "relatorio_rotulos.json"
+REPORT_ROTULOS_MD = OUTPUT_REPORTS / "relatorio_rotulos.md"
+
 # ---------------------------------------------------------------------------
 # Fonte de dados
 # ---------------------------------------------------------------------------
