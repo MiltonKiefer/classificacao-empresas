@@ -13,6 +13,7 @@ from src.entities.aggregate_root import (
     build_consolidation_report,
     write_consolidation,
 )
+from src.model.predict import executar_inferencia
 from src.model.train import executar_treinamento
 from src.preprocessing.build_features import (
     build_feature_frame,
@@ -21,6 +22,7 @@ from src.preprocessing.build_features import (
     make_preprocessor,
     write_features,
 )
+from src.reporting.export_results import exportar_resultados
 
 
 def run_ingestao(arquivo: str | Path | None = None) -> dict:
@@ -126,9 +128,44 @@ def run_treino() -> dict:
     return relatorio
 
 
+def run_inferencia() -> dict:
+    """Etapa 6: estima o porte das empresas sem rótulo conhecido."""
+    print("[1/2] Carregando modelo e preparando empresas elegíveis...")
+    resultado = executar_inferencia()
+    print("[2/2] Previsões gravadas.")
+    print(f"      {config.PREDICTIONS_PARQUET}")
+    print(f"      empresas: {len(resultado):,}".replace(",", "."))
+    print(
+        f"      Médio: {(resultado['porte_estimado'] == config.CLASS_NAMES[config.CLASS_MEDIO]).sum():,} | "
+        f"Grande: {(resultado['porte_estimado'] == config.CLASS_NAMES[config.CLASS_GRANDE]).sum():,}"
+    )
+    print("      todas as estimativas estão sinalizadas para revisão manual.")
+    return {
+        "empresas": int(len(resultado)),
+        "por_classe": resultado["porte_estimado"].value_counts().to_dict(),
+        "caminho": str(config.PREDICTIONS_PARQUET),
+    }
+
+
+def run_exportacao() -> dict:
+    """Etapa 7: exporta rótulos conhecidos e estimativas em saídas distintas."""
+    print("[1/2] Validando e consolidando os resultados...")
+    relatorio = exportar_resultados()
+    print("[2/2] CSV, Parquet e relatórios gravados.")
+    print(f"      {relatorio['caminhos']['csv']}")
+    print(f"      {relatorio['caminhos']['parquet']}")
+    print(f"      {relatorio['caminhos']['markdown']}")
+    print(
+        f"      rótulos conhecidos: {relatorio['rotulos_conhecidos']:,} | "
+        f"estimativas: {relatorio['estimativas_modelo']:,} | "
+        f"revisão recomendada: {relatorio['revisao_recomendada']:,}"
+    )
+    return relatorio
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Pipeline de classificação de porte empresarial")
-    parser.add_argument("--etapa", type=int, default=2, help="Etapa a executar (2 a 5)")
+    parser.add_argument("--etapa", type=int, default=2, help="Etapa a executar (2 a 7)")
     parser.add_argument("--arquivo", type=str, default=None, help="Caminho da planilha (opcional, Etapa 2)")
     args = parser.parse_args()
 
@@ -140,6 +177,10 @@ def main() -> None:
         run_features()
     elif args.etapa == 5:
         run_treino()
+    elif args.etapa == 6:
+        run_inferencia()
+    elif args.etapa == 7:
+        run_exportacao()
     else:
         raise SystemExit(f"Etapa {args.etapa} ainda não implementada (ver README.md).")
 

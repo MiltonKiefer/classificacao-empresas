@@ -23,8 +23,8 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 | 3 | Consolidação por CNPJ raiz e rótulos | ✅ Concluída (45 Médio e 18 Grande, sem conflito) |
 | 4 | Engenharia de atributos | ✅ Concluída (16 colunas; funcionários ficou de fora) |
 | 5 | Treinamento e avaliação | ✅ Concluída (métricas exploratórias; F1-macro 0,524) |
-| 6 | Inferência das empresas sem rótulo | ⏳ Não iniciada |
-| 7 | Exportação, testes e documentação final | ⏳ Não iniciada |
+| 6 | Inferência das empresas sem rótulo | 🟡 Implementada; validação automatizada pendente |
+| 7 | Exportação, testes e documentação final | 🟡 Implementada; validação automatizada pendente |
 
 ### ⚠️ Pendências abertas (ler antes de continuar)
 
@@ -34,16 +34,39 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 Aviso para a Etapa 4: funcionários têm cobertura de 0,08% no arquivo inteiro e 100% nas classes Médio e Grande já rotuladas. A decisão foi não usar essa coluna: ela existe nas empresas já anotadas e quase não existe nas que serão classificadas.
 
 ### ▶️ Próximo passo
-**Etapa 6** — inferência das empresas sem rótulo em `src/model/predict.py`.
-O modelo gravado é o XGBoost com peso de classe (`models/porte_xgb.joblib`).
-Na validação cruzada, o F1-macro foi 0,524, o recall de Grande 0,389 e o de Médio 0,667.
-Esses números são exploratórios: são 18 empresas Grande.
+Instalar Python 3.12, criar o ambiente virtual e validar as Etapas 6 e 7. As estimativas ficam sinalizadas
+para revisão manual porque a amostra é pequena e as probabilidades não foram calibradas; nenhum limiar de
+confiança foi inventado.
 
 ---
 
 ## Como começar
 
 Requer Python 3.10+ (validado com 3.12).
+
+No Windows, instale o [Python Install Manager](https://www.python.org/downloads/latest/pymanager/) (ou use a
+[Microsoft Store](https://apps.microsoft.com/detail/9NQ7512CXL7T)). Python 3.12.16 é distribuído como código-fonte;
+Python 3.12.10 foi a última versão 3.12 com instalador tradicional para Windows. No terminal do VS Code, confira
+as versões 3.12 que o gerenciador oferece e instale 3.12.10:
+
+```powershell
+py list --online 3.12
+py install 3.12.10
+py -V:3.12.10 --version
+```
+
+Crie e use o ambiente do projeto sem depender da política de ativação do PowerShell:
+
+```powershell
+py -V:3.12.10 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pytest
+```
+
+No VS Code, selecione `.venv\Scripts\python.exe` com **Python: Select Interpreter**. Se `py install 3.12.10`
+não estiver disponível, instale a versão 3.12 indicada por `py list --online 3.12` e use o mesmo seletor de versão
+em `py -V:<versão>`.
 
 ```bash
 # 1. Criar e ativar o ambiente virtual
@@ -70,6 +93,12 @@ python -m src.pipeline --etapa 4
 
 # 7. Treinar e avaliar (usa a matriz da Etapa 4)
 python -m src.pipeline --etapa 5
+
+# 8. Inferir empresas sem rótulo Médio/Grande (usa o modelo da Etapa 5)
+python -m src.pipeline --etapa 6
+
+# 9. Exportar resultados e gerar relatório (usa as Etapas 3 e 6)
+python -m src.pipeline --etapa 7
 ```
 
 A leitura do Excel completo pode levar alguns minutos. Saídas da Etapa 2:
@@ -94,6 +123,18 @@ Saídas da Etapa 5:
 - `models/porte_xgb.joblib` — XGBoost reajustado nas 63 empresas rotuladas (não versionado).
 - `outputs/reports/relatorio_avaliacao.md` e `.json` — comparação com a classe majoritária e com uma árvore, métricas e limitação da amostra.
 
+Saída da Etapa 6:
+
+- `outputs/predictions/predicoes.parquet` — estimativas por CNPJ raiz, com probabilidades, porte original,
+  sinalização de revisão manual, versão do modelo, fingerprint dos dados e data da execução.
+
+Saídas da Etapa 7:
+
+- `outputs/predictions/resultado_classificacao.csv` e `.parquet` — rótulos conhecidos e estimativas em
+  registros distintos, com o porte original preservado.
+- `outputs/reports/relatorio_resultados.md` e `.json` — distribuição por classe, registros para revisão
+  e metadados da execução.
+
 O notebook `notebooks/analise_exploratoria.ipynb` consome essas saídas para visualização (abrir no VS Code
 depois de rodar o pipeline).
 
@@ -104,21 +145,19 @@ src/
   config.py                 # caminhos, aliases de colunas, classes, semente   [pronto]
   data/load_data.py         # leitura Excel/CSV, mapeamento e tipos            [pronto]
   data/validate_data.py     # validação de esquema e relatório de qualidade    [pronto]
-  pipeline.py               # coordenação das Etapas 2 a 5                  [parcial]
+  pipeline.py               # coordenação das Etapas 2 a 7                  [parcial]
   entities/aggregate_root.py        # Etapa 3 — uma linha por CNPJ raiz          [pronto]
   labeling/prepare_labels.py        # Etapa 3 — rótulo Médio/Grande              [pronto]
   preprocessing/build_features.py   # Etapa 4 — matriz de atributos              [pronto]
   model/train.py                    # Etapa 5 — XGBoost e baselines              [pronto]
   model/evaluate.py                 # Etapa 5 — métricas da validação            [pronto]
-  model/predict.py                  # Etapa 6 — esqueleto
-  reporting/export_results.py       # Etapa 7 — esqueleto
+  model/predict.py                  # Etapa 6 — inferência                    [implementada]
+  reporting/export_results.py       # Etapa 7 — exportação e relatório       [implementada]
 tests/                      # pytest; dados sintéticos em tests/helpers.py
 docs/                       # guia de desenvolvimento (checklist por etapa)
 data/{raw,interim,processed}/  # dados (NÃO versionados)
 models/  outputs/              # modelos e resultados gerados (NÃO versionados, exceto relatórios)
 ```
-
-Arquivos marcados como "esqueleto" contêm só uma docstring; a implementação está nas etapas seguintes.
 
 ## Decisões já tomadas (resumo)
 

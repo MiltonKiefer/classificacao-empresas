@@ -282,26 +282,31 @@ Não foi aplicado oversampling. O peso da classe Grande, quando usado, é contad
 
 ### Etapa 6 — Inferência das empresas sem rótulo
 
-- [ ] Carregar o modelo aprovado e a mesma lógica de preparação de features utilizada no treinamento.
-- [ ] Selecionar empresas DEMAIS sem rótulo Médio/Grande conhecido.
-- [ ] Gerar probabilidades para Médio e Grande e a classe prevista.
-- [ ] Não sobrescrever classificações oficiais nem os rótulos conhecidos usados no treinamento.
-- [ ] Sinalizar casos de baixa probabilidade/baixa segurança para revisão, com limiar definido a partir da avaliação, não arbitrariamente.
-- [ ] Registrar modelo, versão dos dados e data da execução para cada lote de resultados.
+- [ ] Carregar o modelo aprovado e a mesma lógica de preparação de features utilizada no treinamento. _(implementado; teste automatizado ainda não executado)_
+- [ ] Selecionar empresas DEMAIS sem rótulo Médio/Grande conhecido. _(somente conjunto `inferencia`; implementação pendente de validação)_
+- [ ] Gerar probabilidades para Médio e Grande e a classe prevista. _(implementado; teste automatizado ainda não executado)_
+- [ ] Não sobrescrever classificações oficiais nem os rótulos conhecidos usados no treinamento. _(saída separada; apenas as empresas de inferência são previstas)_
+- [ ] Sinalizar para revisão manual. _(todas as estimativas são sinalizadas: as probabilidades não foram calibradas e a avaliação não persistiu probabilidades fora do fold; nenhum limiar arbitrário é aplicado)_
+- [ ] Registrar modelo, versão dos dados e data da execução para cada lote de resultados. _(hash SHA-256 do modelo, da base consolidada e das features; variante e timestamp por linha)_
 
-**Entrega da etapa:** predições por CNPJ raiz, sem alterar a informação original.
+**Entrega da etapa:** `outputs/predictions/predicoes.parquet`, com previsões por CNPJ raiz e sem alterar a informação original.
+
+> **Status (26/11/2026):** implementação concluída; a validação automatizada ainda depende de um ambiente Python disponível.
 
 ### Etapa 7 — Exportação, testes e documentação
 
-- [ ] Exportar previsões em CSV e/ou Parquet.
-- [ ] Incluir CNPJ raiz, porte original, porte estimado, probabilidades por classe, status da classificação, versão do modelo e data da execução.
-- [ ] Diferenciar explicitamente `rótulo conhecido` de `estimativa do modelo`.
-- [ ] Criar relatório de distribuição das classes estimadas e casos sinalizados para revisão.
-- [ ] Criar testes unitários para agregação por raiz, mapeamento de rótulos, tratamento de capital social e geração de features.
-- [ ] Criar teste de integração para executar o pipeline com uma amostra pequena.
-- [ ] Documentar como instalar dependências e executar cada etapa no README.
+- [ ] Exportar previsões em CSV e Parquet. _(implementado; validação automatizada pendente)_
+- [ ] Incluir CNPJ raiz, porte original, porte estimado, probabilidades por classe, status da classificação, versão do modelo e data da execução. _(implementado; validação automatizada pendente)_
+- [ ] Diferenciar explicitamente `rótulo conhecido` de `estimativa do modelo`. _(campos `rotulo_conhecido` e `porte_estimado`, com status distintos)_
+- [ ] Criar relatório de distribuição das classes estimadas e casos sinalizados para revisão. _(Markdown e JSON)_
+- [ ] Criar testes unitários para agregação por raiz, mapeamento de rótulos, tratamento de capital social e geração de features. _(testes existentes nas etapas anteriores e novos testes da exportação)_
+- [ ] Criar teste de integração para executar o pipeline com uma amostra pequena. _(teste de exportação CSV/Parquet com dados sintéticos; execução pendente)_
+- [ ] Documentar como instalar dependências e executar cada etapa no README. _(inclui instalação do Python no Windows e comandos das etapas 2–7)_
 
-**Entrega final:** pipeline executável, resultados rastreáveis, testes básicos e documentação de uso.
+**Entrega final:** pipeline executável, resultados rastreáveis, testes básicos e documentação de uso. A Etapa 7 produz
+`outputs/predictions/resultado_classificacao.csv/.parquet` e `outputs/reports/relatorio_resultados.md/.json`.
+
+> **Status (26/11/2026):** implementação das Etapas 6 e 7 concluída; a validação automatizada aguarda a instalação e configuração do Python no notebook.
 
 ## 5. Estratégia de validação e limitações
 
@@ -311,6 +316,7 @@ Não foi aplicado oversampling. O peso da classe Grande, quando usado, é contad
 4. **Probabilidade não é garantia:** a probabilidade prevista pelo XGBoost não deve ser chamada automaticamente de confiança confiável. Calibração e limiares de revisão precisam ser avaliados; com poucos exemplos, a incerteza deve ser declarada.
 5. **Escopo das conclusões:** enquanto a base rotulada for pequena, as previsões devem ser tratadas como estimativas exploratórias, não como classificação oficial ou validação definitiva do porte empresarial.
 6. **Reprodutibilidade:** registrar semente aleatória, versão dos dados, parâmetros, features e métricas em cada treinamento.
+7. **Revisão das estimativas:** enquanto as probabilidades não forem calibradas e não houver probabilidades fora do fold persistidas para validar um limiar, todas as estimativas da Etapa 6 ficam recomendadas para revisão manual.
 
 ## 6. Tecnologias e dependências
 
@@ -341,8 +347,10 @@ Cada registro de saída deve representar uma empresa (CNPJ raiz), com campos equ
 | `prob_grande` | Probabilidade estimada para a classe Grande |
 | `status_classificacao` | `rotulo_conhecido` ou `estimativa_modelo` |
 | `modelo_versao` | Identificação da versão do modelo |
+| `modelo_variante` | Variante escolhida na Etapa 5 |
+| `dados_versao` | Fingerprint dos Parquets de features e empresas consolidadas |
 | `data_execucao` | Data/hora da execução |
-| `revisao_recomendada` | Indicador para casos que exigem revisão, segundo critério validado |
+| `revisao_recomendada` | Indicador conservador; na Etapa 6 atual, todas as estimativas são sinalizadas |
 
 Os nomes finais podem ser ajustados ao padrão do código. O essencial é preservar a distinção entre dado de origem e estimativa. Não substituir o porte oficial `DEMAIS` por Médio/Grande no campo original; armazenar a previsão em colunas separadas.
 

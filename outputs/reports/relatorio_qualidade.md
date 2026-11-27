@@ -1,7 +1,7 @@
 # Relatório de qualidade dos dados
 
-- Arquivo: `query_result_2026-10-06T08_52_19.110898753-03_00(1).xlsx` (aba: `Resultado da consulta`)
-- Linhas: **180.628** | Colunas: **46** | Gerado em: 2026-11-26T14:50:08
+- Arquivo: `query_result_2026-10-06T08_52_19.110898753-03_00.xlsx` (aba: `Resultado da consulta`)
+- Linhas: **180.628** | Colunas: **46** | Gerado em: 2026-11-26T20:59:53
 
 ## Pendências identificadas automaticamente
 
