@@ -1,0 +1,23 @@
+{
+  "data_exportacao": "2026-11-26T22:26:47-03:00",
+  "total_registros": 163584,
+  "rotulos_conhecidos": 63,
+  "estimativas_modelo": 163521,
+  "rotulos_conhecidos_por_classe": {
+    "Médio": 45,
+    "Grande": 18
+  },
+  "estimativas_por_classe": {
+    "Médio": 159847,
+    "Grande": 3674
+  },
+  "revisao_recomendada": 163521,
+  "excluidas_revisao": 0,
+  "excluidas_fora_do_escopo": 74,
+  "modelo_versao": "sha256:71550a6cb8a6b99cd52dde41e078448f9744341ea37b00bc0035ea4dd49ee41e",
+  "modelo_variante": "xgb_ponderado",
+  "dados_versao": "sha256:d41fa2a88c84e1033725f045f1c2b3c9592895064d301df53ca4210ffe8a4812",
+  "data_execucao_inferencia": "2026-11-26T22:26:35-03:00",
+  "probabilidades_calibradas": false,
+  "observacao": "As probabilidades são exploratórias. Todas as estimativas estão sinalizadas para revisão manual porque não há calibração nem limiar de revisão validado."
+}

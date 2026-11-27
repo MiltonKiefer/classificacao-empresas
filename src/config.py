@@ -6,6 +6,7 @@ cabeçalho, basta ajustar os aliases aqui.
 """
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -25,6 +26,30 @@ INTERIM_ESTABELECIMENTOS = DATA_INTERIM / "estabelecimentos.parquet"
 REPORT_QUALIDADE_JSON = OUTPUT_REPORTS / "relatorio_qualidade.json"
 REPORT_QUALIDADE_MD = OUTPUT_REPORTS / "relatorio_qualidade.md"
 
+# Arquivos gerados na Etapa 3
+PROCESSED_EMPRESAS = DATA_PROCESSED / "empresas_raiz.parquet"
+REPORT_ROTULOS_JSON = OUTPUT_REPORTS / "relatorio_rotulos.json"
+REPORT_ROTULOS_MD = OUTPUT_REPORTS / "relatorio_rotulos.md"
+
+# Arquivos gerados na Etapa 4
+FEATURES_PARQUET = DATA_PROCESSED / "features.parquet"
+REPORT_FEATURES_JSON = OUTPUT_REPORTS / "dicionario_features.json"
+REPORT_FEATURES_MD = OUTPUT_REPORTS / "dicionario_features.md"
+
+# Arquivos gerados na Etapa 5
+MODEL_PATH = MODELS_DIR / "porte_xgb.joblib"
+REPORT_AVALIACAO_JSON = OUTPUT_REPORTS / "relatorio_avaliacao.json"
+REPORT_AVALIACAO_MD = OUTPUT_REPORTS / "relatorio_avaliacao.md"
+
+# Arquivos gerados na Etapa 6
+PREDICTIONS_PARQUET = OUTPUT_PREDICTIONS / "predicoes.parquet"
+
+# Arquivos gerados na Etapa 7
+RESULTADOS_CSV = OUTPUT_PREDICTIONS / "resultado_classificacao.csv"
+RESULTADOS_PARQUET = OUTPUT_PREDICTIONS / "resultado_classificacao.parquet"
+REPORT_RESULTADOS_JSON = OUTPUT_REPORTS / "relatorio_resultados.json"
+REPORT_RESULTADOS_MD = OUTPUT_REPORTS / "relatorio_resultados.md"
+
 # ---------------------------------------------------------------------------
 # Fonte de dados
 # ---------------------------------------------------------------------------
@@ -35,6 +60,9 @@ EXCEL_SHEET = "Resultado da consulta"  # se não existir, usa-se a primeira aba
 # Reprodutibilidade e classes
 # ---------------------------------------------------------------------------
 RANDOM_STATE = 42
+# Data do extrato OLAP (no nome do arquivo). A idade da empresa é contada até esta data,
+# não até o dia em que o código é executado.
+REFERENCE_DATE = date(2026, 10, 6)
 
 CLASS_MEDIO = 0
 CLASS_GRANDE = 1
@@ -44,14 +72,16 @@ CLASS_NAMES = {CLASS_MEDIO: "Médio", CLASS_GRANDE: "Grande"}
 # Colunas da planilha
 # ---------------------------------------------------------------------------
 # nome lógico -> possíveis cabeçalhos (comparados após normalização: sem acentos,
-# minúsculas, pontuação -> espaço). ⚠ PENDENTE: confirmar com a planilha real.
+# minúsculas, pontuação -> espaço). CNAE e telefone conferidos na planilha real.
 COLUMN_ALIASES: dict[str, list[str]] = {
     "cnpj": ["cnpj", "cnpj completo", "cnpj estabelecimento"],
     "cnpj_raiz": ["cnpj raiz", "cnpj basico", "raiz cnpj", "raiz"],
     "razao_social": ["razao social", "nome empresarial", "razao"],
     "capital_social": ["capital social"],
     "natureza_juridica": ["natureza juridica", "cod natureza juridica", "codigo natureza juridica"],
-    "cnae_principal": ["cnae fiscal principal", "cnae principal", "cnae fiscal", "cnae"],
+    "cnae_principal": [
+        "codigo cnae fiscal principal", "cnae fiscal principal", "cnae principal", "cnae fiscal", "cnae",
+    ],
     "matriz_filial": ["matriz filial", "identificador matriz filial", "tipo estabelecimento"],
     "situacao_cadastral": ["situacao cadastral", "situacao"],
     "data_inicio": [
@@ -65,7 +95,7 @@ COLUMN_ALIASES: dict[str, list[str]] = {
     "porte_obs": ["obs porte sa3"],  # fonte do rótulo Médio/Grande
     "cep": ["cep"],
     "email": ["email", "e mail", "correio eletronico"],
-    "telefone": ["telefone", "telefone 1", "ddd telefone 1"],
+    "telefone": ["telefone1", "telefone", "telefone 1", "ddd telefone 1"],
 }
 
 # Campos sem os quais a Etapa 2 não faz sentido
@@ -92,8 +122,12 @@ DATE_FIELDS = ["data_inicio"]
 NEVER_FEATURES = ["cnpj", "cnpj_raiz", "razao_social", "email", "telefone", "porte_obs", "porte_oficial"]
 
 # ---------------------------------------------------------------------------
-# Decisões ainda pendentes (ver README / guia)
+# Capital social igual a zero
 # ---------------------------------------------------------------------------
-# Semântica do capital social igual a zero: "pendente" até confirmação com a fonte.
-# Valores possíveis quando confirmado: "nao_informado" | "valor_real".
-CAPITAL_SOCIAL_ZERO_RULE = "pendente"
+# Regra adotada em 26/11/2026.
+# Um valor 0 em uma métrica — capital social é o caso confirmado na planilha —
+# não é evidência de pequeno porte e não classifica a empresa sozinho.
+# O zero é preservado na base (não vira ausência nem NaN). A estimativa de
+# Médio/Grande considera o conjunto das métricas disponíveis.
+# "pendente" reabre o aviso no relatório de qualidade.
+CAPITAL_SOCIAL_ZERO_RULE = "zero_nao_define_porte"

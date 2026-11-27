@@ -1,0 +1,133 @@
+{
+  "referencia_temporal": "2026-10-06",
+  "regra_capital_social_zero": "zero_nao_define_porte",
+  "empresas": 163584,
+  "treino": 63,
+  "inferencia": 163521,
+  "treino_por_classe": {
+    "0.0": 45,
+    "1.0": 18
+  },
+  "features": [
+    "capital_social_log",
+    "capital_social_zero",
+    "qtd_estabelecimentos",
+    "qtd_cnaes_distintos",
+    "qtd_divisoes_cnae",
+    "qtd_situacao_ativa",
+    "qtd_situacao_baixada",
+    "qtd_situacao_inapta",
+    "qtd_situacao_suspensa",
+    "qtd_situacao_nula",
+    "qtd_situacao_outra",
+    "tempo_atividade_anos",
+    "tem_matriz",
+    "natureza_juridica",
+    "divisao_cnae",
+    "situacao_matriz"
+  ],
+  "numericas": [
+    "capital_social_log",
+    "capital_social_zero",
+    "qtd_estabelecimentos",
+    "qtd_cnaes_distintos",
+    "qtd_divisoes_cnae",
+    "qtd_situacao_ativa",
+    "qtd_situacao_baixada",
+    "qtd_situacao_inapta",
+    "qtd_situacao_suspensa",
+    "qtd_situacao_nula",
+    "qtd_situacao_outra",
+    "tempo_atividade_anos",
+    "tem_matriz"
+  ],
+  "categoricas": [
+    "natureza_juridica",
+    "divisao_cnae",
+    "situacao_matriz"
+  ],
+  "excluidas": [
+    {
+      "coluna": "cnpj_raiz",
+      "motivo": "Chave da empresa. Fica na tabela só para rastrear a linha, não entra no modelo."
+    },
+    {
+      "coluna": "razao_social",
+      "motivo": "Identificador textual."
+    },
+    {
+      "coluna": "rotulo",
+      "motivo": "Resposta do treino. Vira o vetor y, nunca uma coluna de X."
+    },
+    {
+      "coluna": "rotulo_nome",
+      "motivo": "O mesmo rótulo, em texto."
+    },
+    {
+      "coluna": "conjunto",
+      "motivo": "Define quem é treino e quem é inferência. Não descreve a empresa."
+    },
+    {
+      "coluna": "motivo_conjunto",
+      "motivo": "Explica a separação dos rótulos."
+    },
+    {
+      "coluna": "rotulos_observados",
+      "motivo": "Texto original de Obs Porte Sa3."
+    },
+    {
+      "coluna": "porte_oficial",
+      "motivo": "Porte oficial. Na base atual é constante (DEMAIS) e não pode revelar a resposta."
+    },
+    {
+      "coluna": "funcionarios",
+      "motivo": "Preenchido nas 63 empresas rotuladas e em quase nenhuma das demais. Usar esse campo treinaria o modelo com um dado que a inferência não tem."
+    },
+    {
+      "coluna": "cnae_principal",
+      "motivo": "Mais de mil códigos para 63 exemplos. No lugar entra a divisão (dois primeiros dígitos)."
+    },
+    {
+      "coluna": "capital_social",
+      "motivo": "Substituído por capital_social_log e capital_social_zero, para a escala não dominar o zero."
+    },
+    {
+      "coluna": "capital_divergente",
+      "motivo": "Na planilha real nenhuma raiz diverge. Coluna de auditoria."
+    },
+    {
+      "coluna": "natureza_divergente",
+      "motivo": "Na planilha real nenhuma raiz diverge. Coluna de auditoria."
+    },
+    {
+      "coluna": "data_inicio_empresa",
+      "motivo": "Vira tempo_atividade_anos até a data de referência."
+    },
+    {
+      "coluna": "data_inicio_matriz",
+      "motivo": "Auditoria. A idade usa a menor data da raiz."
+    },
+    {
+      "coluna": "filial_mais_antiga_que_matriz",
+      "motivo": "Só 30 raízes. Quase constante."
+    },
+    {
+      "coluna": "mais_de_uma_matriz",
+      "motivo": "Nenhuma raiz tem mais de uma matriz."
+    },
+    {
+      "coluna": "cnae_origem",
+      "motivo": "Diz de onde veio o CNAE. tem_matriz já cobre a ausência de matriz."
+    },
+    {
+      "coluna": "cnae_divergente",
+      "motivo": "Resumo de qtd_cnaes_distintos, que já entra como número."
+    },
+    {
+      "coluna": "porte_oficial_divergente",
+      "motivo": "Auditoria do porte oficial."
+    }
+  ],
+  "colunas_codificadas_no_treino": 29,
+  "preprocessamento": "SimpleImputer e OneHotEncoder dentro de ColumnTransformer. O fit ocorre só nas linhas de treino de cada partição da Etapa 5. Esta etapa não grava um transformador já ajustado."
+}

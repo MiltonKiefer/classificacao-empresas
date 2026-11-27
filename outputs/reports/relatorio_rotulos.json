@@ -1,0 +1,86 @@
+{
+  "entrada": {
+    "linhas_entrada": 180628,
+    "linhas_sem_cnpj_raiz": 0,
+    "raizes": 163658
+  },
+  "raizes": 163658,
+  "conjuntos": {
+    "inferencia": 163521,
+    "fora_do_escopo": 74,
+    "treino": 63
+  },
+  "treino_por_classe": {
+    "Médio": 45,
+    "Grande": 18
+  },
+  "revisao": 0,
+  "sem_matriz": 8227,
+  "mais_de_uma_matriz": 0,
+  "capital_divergente": 0,
+  "capital_zero": 139166,
+  "natureza_divergente": 0,
+  "cnae_divergente": 2708,
+  "filial_mais_antiga_que_matriz": 30,
+  "funcionarios_preenchidos": 139,
+  "funcionarios_preenchidos_no_treino": 63,
+  "funcionarios_no_treino": 63,
+  "regras": [
+    {
+      "campo": "cnpj_raiz",
+      "regra": "Chave da empresa. Não entra como feature."
+    },
+    {
+      "campo": "qtd_estabelecimentos",
+      "regra": "Quantidade de CNPJs completos distintos da raiz."
+    },
+    {
+      "campo": "capital_social",
+      "regra": "Valor único da raiz, ou o da matriz se houver divergência. Nunca é somado. Zero é preservado."
+    },
+    {
+      "campo": "natureza_juridica",
+      "regra": "Valor único da raiz, ou o da matriz se houver divergência."
+    },
+    {
+      "campo": "cnae_principal",
+      "regra": "CNAE da matriz quando há exatamente uma. Senão, o do estabelecimento com início mais antigo."
+    },
+    {
+      "campo": "qtd_cnaes_distintos",
+      "regra": "CNAEs principais diferentes entre os estabelecimentos da raiz."
+    },
+    {
+      "campo": "qtd_divisoes_cnae",
+      "regra": "Divisões (dois primeiros dígitos) distintas na raiz."
+    },
+    {
+      "campo": "situacao_matriz",
+      "regra": "Situação cadastral da matriz. Filial não substitui matriz ausente."
+    },
+    {
+      "campo": "qtd_situacao_*",
+      "regra": "Contagem de estabelecimentos por situação cadastral."
+    },
+    {
+      "campo": "data_inicio_empresa",
+      "regra": "Menor data de início válida da raiz. É a referência de idade."
+    },
+    {
+      "campo": "data_inicio_matriz",
+      "regra": "Data de início da matriz, preservada para auditoria."
+    },
+    {
+      "campo": "funcionarios",
+      "regra": "Valor único observado. Ausência permanece nula e não vira zero."
+    },
+    {
+      "campo": "rotulo",
+      "regra": "0 = Médio e 1 = Grande, só quando o porte é único na raiz."
+    },
+    {
+      "campo": "conjunto",
+      "regra": "treino, inferencia, revisao ou fora_do_escopo."
+    }
+  ]
+}

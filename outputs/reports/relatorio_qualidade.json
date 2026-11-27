@@ -1,0 +1,386 @@
+{
+  "geral": {
+    "arquivo": "query_result_2026-10-06T08_52_19.110898753-03_00.xlsx",
+    "aba": "Resultado da consulta",
+    "linhas": 180628,
+    "colunas": 46,
+    "gerado_em": "2026-11-26T20:59:53"
+  },
+  "colunas": {
+    "mapeamento": {
+      "Cnpj": "cnpj",
+      "Cnpj Raiz": "cnpj_raiz",
+      "Razao Social": "razao_social",
+      "Capital Social": "capital_social",
+      "Codigo Natureza Juridica": "natureza_juridica",
+      "Codigo Cnae Fiscal Principal": "cnae_principal",
+      "Matriz Filial": "matriz_filial",
+      "Situacao Cadastral": "situacao_cadastral",
+      "Data Inicio Atividade": "data_inicio",
+      "Obs Qtd Funcionarios": "funcionarios",
+      "Porte": "porte_oficial",
+      "Obs Porte Sa3": "porte_obs",
+      "Cep": "cep",
+      "Email": "email",
+      "Telefone1": "telefone"
+    },
+    "nao_mapeadas": [
+      "Tipo Conta",
+      "Nome Fantasia",
+      "Empresa Sediada",
+      "Ente Federativo",
+      "Origem",
+      "Codigo Porte",
+      "Codigo Situacao Cadastral",
+      "Data Situacao Cadastral",
+      "Descricao Cnae Fiscal Principal",
+      "Codigo Cnae Fiscal Secundario",
+      "Descricao Cnae Fiscal Secundario",
+      "Descricao Natureza Juridica",
+      "ID Municipio",
+      "Nome Municipio",
+      "Tipo Logradouro",
+      "Logradouro",
+      "Bairro",
+      "Complemento",
+      "Numero Endereco",
+      "Uf",
+      "Pais Codigo",
+      "Pais Nome",
+      "Telefone2",
+      "Fax",
+      "ID Sindicato",
+      "Nome Sindicato",
+      "Inscricao Estadual",
+      "Situacao Especial",
+      "Data Situacao Especial",
+      "Search Term",
+      "Sigla Sindicato"
+    ],
+    "campos_logicos_ausentes": []
+  },
+  "problemas_esquema": [],
+  "problemas_conversao": {
+    "capital_social_nao_numerico": 0,
+    "funcionarios_nao_numerico": 0,
+    "data_inicio_invalida": 0
+  },
+  "chaves": {
+    "cnpj_nulos": 0,
+    "cnpj_com_tamanho_invalido": 0,
+    "linhas_com_cnpj_duplicado": 0,
+    "cnpj_distintos": 180628,
+    "linhas_totalmente_duplicadas": 0,
+    "cnpj_raiz_nulos": 0,
+    "cnpj_raiz_distintos": 163658,
+    "raizes_com_mais_de_um_estabelecimento": 6380,
+    "max_estabelecimentos_por_raiz": 179,
+    "raiz_diferente_do_prefixo_do_cnpj": 0
+  },
+  "nulos_por_coluna": {
+    "Search Term": {
+      "nulos": 180628,
+      "pct": 100.0
+    },
+    "Descricao Cnae Fiscal Secundario": {
+      "nulos": 180628,
+      "pct": 100.0
+    },
+    "Inscricao Estadual": {
+      "nulos": 180628,
+      "pct": 100.0
+    },
+    "funcionarios": {
+      "nulos": 180489,
+      "pct": 99.92
+    },
+    "Data Situacao Especial": {
+      "nulos": 180465,
+      "pct": 99.91
+    },
+    "Situacao Especial": {
+      "nulos": 180465,
+      "pct": 99.91
+    },
+    "Nome Sindicato": {
+      "nulos": 180389,
+      "pct": 99.87
+    },
+    "ID Sindicato": {
+      "nulos": 180389,
+      "pct": 99.87
+    },
+    "Sigla Sindicato": {
+      "nulos": 180389,
+      "pct": 99.87
+    },
+    "porte_obs": {
+      "nulos": 180389,
+      "pct": 99.87
+    },
+    "Ente Federativo": {
+      "nulos": 180047,
+      "pct": 99.68
+    },
+    "Telefone2": {
+      "nulos": 165261,
+      "pct": 91.49
+    },
+    "Fax": {
+      "nulos": 151155,
+      "pct": 83.68
+    },
+    "Codigo Cnae Fiscal Secundario": {
+      "nulos": 144698,
+      "pct": 80.11
+    },
+    "email": {
+      "nulos": 126929,
+      "pct": 70.27
+    },
+    "telefone": {
+      "nulos": 111342,
+      "pct": 61.64
+    },
+    "Complemento": {
+      "nulos": 53592,
+      "pct": 29.67
+    },
+    "Tipo Logradouro": {
+      "nulos": 5529,
+      "pct": 3.06
+    },
+    "Data Situacao Cadastral": {
+      "nulos": 349,
+      "pct": 0.19
+    }
+  },
+  "capital_social": {
+    "disponivel": true,
+    "nulos": 0,
+    "pct_nulos": 0.0,
+    "zeros": 146878,
+    "pct_zeros": 81.32,
+    "positivos": 33750,
+    "pct_positivos": 18.68,
+    "negativos": 0,
+    "quantis_positivos": {
+      "p1": 100000.0,
+      "p25": 1500000.0,
+      "p50": 20000000.0,
+      "p75": 800000000.0,
+      "p95": 242622020700.0,
+      "p99": 7620000000000.0,
+      "min": 1.0,
+      "max": 20543196049052.0,
+      "media": 176063644590.13174
+    },
+    "maiores_valores": [
+      20543196049052.0,
+      20543196049052.0,
+      20543196049052.0,
+      20543196049052.0,
+      20543196049052.0
+    ],
+    "regra_zero_adotada": "zero_nao_define_porte",
+    "evidencias_semantica_zero": {
+      "por_grupo_de_rotulo": {
+        "grande": {
+          "registros": 18,
+          "pct_zero": 5.56,
+          "pct_nulo": 0.0,
+          "mediana_positivos": 2025000000.0
+        },
+        "medio": {
+          "registros": 45,
+          "pct_zero": 8.89,
+          "pct_nulo": 0.0,
+          "mediana_positivos": 1038500000.0
+        },
+        "outros_portes": {
+          "registros": 176,
+          "pct_zero": 7.39,
+          "pct_nulo": 0.0,
+          "mediana_positivos": 100000000.0
+        },
+        "sem_informacao": {
+          "registros": 180389,
+          "pct_zero": 81.41,
+          "pct_nulo": 0.0,
+          "mediana_positivos": 20000000.0
+        }
+      },
+      "naturezas_com_maior_pct_zero(n>=20)": {
+        "1015": {
+          "registros": 112,
+          "pct_zero": 100.0
+        },
+        "1023": {
+          "registros": 169,
+          "pct_zero": 100.0
+        },
+        "1104": {
+          "registros": 78,
+          "pct_zero": 100.0
+        },
+        "1112": {
+          "registros": 47,
+          "pct_zero": 100.0
+        },
+        "1147": {
+          "registros": 21,
+          "pct_zero": 100.0
+        },
+        "1244": {
+          "registros": 36,
+          "pct_zero": 100.0
+        },
+        "1325": {
+          "registros": 21,
+          "pct_zero": 100.0
+        },
+        "2070": {
+          "registros": 330,
+          "pct_zero": 100.0
+        },
+        "2100": {
+          "registros": 23,
+          "pct_zero": 100.0
+        },
+        "2151": {
+          "registros": 765,
+          "pct_zero": 100.0
+        }
+      }
+    }
+  },
+  "funcionarios": {
+    "disponivel": true,
+    "preenchidos": 139,
+    "cobertura_pct": 0.08,
+    "nulos": 180489,
+    "zeros": 2,
+    "quantis": {
+      "p1": 0.3800000000000001,
+      "p25": 28.0,
+      "p50": 68.0,
+      "p75": 241.0,
+      "p95": 927.7999999999995,
+      "p99": 1446.4200000000005,
+      "min": 0.0,
+      "max": 1800.0,
+      "media": 215.33812949640287
+    },
+    "cobertura_por_grupo_de_rotulo": {
+      "grande": {
+        "registros": 18,
+        "cobertura_pct": 100.0
+      },
+      "medio": {
+        "registros": 45,
+        "cobertura_pct": 100.0
+      },
+      "outros_portes": {
+        "registros": 176,
+        "cobertura_pct": 43.18
+      },
+      "sem_informacao": {
+        "registros": 180389,
+        "cobertura_pct": 0.0
+      }
+    }
+  },
+  "datas": {
+    "disponivel": true,
+    "nulas": 0,
+    "invalidas_na_conversao": 0,
+    "futuras": 0,
+    "anteriores_a_1900": 0,
+    "menor": "1901-01-01",
+    "maior": "2026-09-11"
+  },
+  "categorias": {
+    "natureza_juridica": {
+      "valores_distintos": 67,
+      "nulos": 0,
+      "top_10": {
+        "2062": 80957,
+        "2135": 45737,
+        "3999": 13084,
+        "4090": 12273,
+        "3085": 6591,
+        "2054": 5333,
+        "2321": 2992,
+        "3220": 2210,
+        "4014": 1910,
+        "2232": 1733
+      }
+    },
+    "cnae_principal": {
+      "valores_distintos": 1076,
+      "nulos": 0,
+      "top_10": {
+        "8888888": 22797,
+        "9492800": 12783,
+        "4781400": 8092,
+        "8112500": 6572,
+        "5611203": 6372,
+        "9430800": 5383,
+        "4774100": 4705,
+        "6911701": 4594,
+        "5611201": 4474,
+        "4712100": 4086
+      }
+    },
+    "matriz_filial": {
+      "valores_distintos": 2,
+      "nulos": 0,
+      "top_10": {
+        "MATRIZ": 155431,
+        "FILIAL": 25197
+      }
+    },
+    "situacao_cadastral": {
+      "valores_distintos": 5,
+      "nulos": 0,
+      "top_10": {
+        "BAIXADA": 133384,
+        "ATIVA": 33484,
+        "INAPTA": 11558,
+        "SUSPENSA": 1512,
+        "NULA": 690
+      }
+    },
+    "porte_oficial": {
+      "valores_distintos": 1,
+      "nulos": 0,
+      "top_10": {
+        "DEMAIS": 180628
+      }
+    }
+  },
+  "rotulos_porte_obs": {
+    "preenchidos": 239,
+    "valores_brutos_normalizados": {
+      "sem informacao": 102,
+      "pequena": 47,
+      "media": 45,
+      "micro": 27,
+      "grande": 18
+    },
+    "registros_por_grupo": {
+      "sem_informacao": 180389,
+      "outros_portes": 176,
+      "medio": 45,
+      "grande": 18
+    },
+    "nota": "Contagem por estabelecimento. O mapeamento oficial e a contagem por CNPJ raiz (com tratamento de conflitos) serão feitos na Etapa 3.",
+    "raizes_distintas_por_grupo": {
+      "grande": 18,
+      "medio": 45
+    }
+  },
+  "pendencias": [
+    "Cobertura baixa de funcionários (0.08%). Só usar como feature se a cobertura nas classes Médio/Grande for suficiente."
+  ]
+}
