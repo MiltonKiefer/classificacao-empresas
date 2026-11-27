@@ -282,31 +282,31 @@ Não foi aplicado oversampling. O peso da classe Grande, quando usado, é contad
 
 ### Etapa 6 — Inferência das empresas sem rótulo
 
-- [ ] Carregar o modelo aprovado e a mesma lógica de preparação de features utilizada no treinamento. _(implementado; teste automatizado ainda não executado)_
-- [ ] Selecionar empresas DEMAIS sem rótulo Médio/Grande conhecido. _(somente conjunto `inferencia`; implementação pendente de validação)_
-- [ ] Gerar probabilidades para Médio e Grande e a classe prevista. _(implementado; teste automatizado ainda não executado)_
-- [ ] Não sobrescrever classificações oficiais nem os rótulos conhecidos usados no treinamento. _(saída separada; apenas as empresas de inferência são previstas)_
-- [ ] Sinalizar para revisão manual. _(todas as estimativas são sinalizadas: as probabilidades não foram calibradas e a avaliação não persistiu probabilidades fora do fold; nenhum limiar arbitrário é aplicado)_
-- [ ] Registrar modelo, versão dos dados e data da execução para cada lote de resultados. _(hash SHA-256 do modelo, da base consolidada e das features; variante e timestamp por linha)_
+- [x] Carregar o modelo aprovado e a mesma lógica de preparação de features utilizada no treinamento. _(pipeline completo carregado do artefato da Etapa 5; teste e execução real concluídos)_
+- [x] Selecionar empresas DEMAIS sem rótulo Médio/Grande conhecido. _(somente conjunto `inferencia`)_
+- [x] Gerar probabilidades para Médio e Grande e a classe prevista.
+- [x] Não sobrescrever classificações oficiais nem os rótulos conhecidos usados no treinamento. _(saída separada; apenas as empresas de inferência são previstas)_
+- [x] Sinalizar para revisão manual. _(todas as estimativas são sinalizadas: as probabilidades não foram calibradas e a avaliação não persistiu probabilidades fora do fold; nenhum limiar arbitrário é aplicado)_
+- [x] Registrar modelo, versão dos dados e data da execução para cada lote de resultados. _(hash SHA-256 do modelo, da base consolidada e das features; variante e timestamp por linha)_
 
 **Entrega da etapa:** `outputs/predictions/predicoes.parquet`, com previsões por CNPJ raiz e sem alterar a informação original.
 
-> **Status (26/11/2026):** implementação concluída; a validação automatizada ainda depende de um ambiente Python disponível.
+> **Status (26/11/2026):** etapa executada na base real e validada pela suíte de 54 testes.
 
 ### Etapa 7 — Exportação, testes e documentação
 
-- [ ] Exportar previsões em CSV e Parquet. _(implementado; validação automatizada pendente)_
-- [ ] Incluir CNPJ raiz, porte original, porte estimado, probabilidades por classe, status da classificação, versão do modelo e data da execução. _(implementado; validação automatizada pendente)_
-- [ ] Diferenciar explicitamente `rótulo conhecido` de `estimativa do modelo`. _(campos `rotulo_conhecido` e `porte_estimado`, com status distintos)_
-- [ ] Criar relatório de distribuição das classes estimadas e casos sinalizados para revisão. _(Markdown e JSON)_
-- [ ] Criar testes unitários para agregação por raiz, mapeamento de rótulos, tratamento de capital social e geração de features. _(testes existentes nas etapas anteriores e novos testes da exportação)_
-- [ ] Criar teste de integração para executar o pipeline com uma amostra pequena. _(teste de exportação CSV/Parquet com dados sintéticos; execução pendente)_
-- [ ] Documentar como instalar dependências e executar cada etapa no README. _(inclui instalação do Python no Windows e comandos das etapas 2–7)_
+- [x] Exportar previsões em CSV e Parquet. _(executado na base real; teste automatizado passou)_
+- [x] Incluir CNPJ raiz, porte original, porte estimado, probabilidades por classe, status da classificação, versão do modelo e data da execução.
+- [x] Diferenciar explicitamente `rótulo conhecido` de `estimativa do modelo`. _(campos `rotulo_conhecido` e `porte_estimado`, com status distintos)_
+- [x] Criar relatório de distribuição das classes estimadas e casos sinalizados para revisão. _(Markdown e JSON)_
+- [x] Criar testes unitários para agregação por raiz, mapeamento de rótulos, tratamento de capital social e geração de features. _(54 testes passaram)_
+- [ ] Criar teste automatizado ponta a ponta para executar as Etapas 6 e 7 com uma amostra sintética. _(a execução real foi concluída; os testes atuais cobrem inferência e exportação isoladamente)_
+- [x] Documentar como instalar dependências e executar cada etapa no README. _(inclui instalação do Python no Windows e comandos das etapas 2–7)_
 
 **Entrega final:** pipeline executável, resultados rastreáveis, testes básicos e documentação de uso. A Etapa 7 produz
 `outputs/predictions/resultado_classificacao.csv/.parquet` e `outputs/reports/relatorio_resultados.md/.json`.
 
-> **Status (26/11/2026):** implementação das Etapas 6 e 7 concluída; a validação automatizada aguarda a instalação e configuração do Python no notebook.
+> **Status (26/11/2026):** execução real concluída; 54 testes passaram. Falta apenas o teste automatizado ponta a ponta com amostra sintética.
 
 ## 5. Estratégia de validação e limitações
 

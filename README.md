@@ -23,8 +23,8 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 | 3 | Consolidação por CNPJ raiz e rótulos | ✅ Concluída (45 Médio e 18 Grande, sem conflito) |
 | 4 | Engenharia de atributos | ✅ Concluída (16 colunas; funcionários ficou de fora) |
 | 5 | Treinamento e avaliação | ✅ Concluída (métricas exploratórias; F1-macro 0,524) |
-| 6 | Inferência das empresas sem rótulo | 🟡 Implementada; validação automatizada pendente |
-| 7 | Exportação, testes e documentação final | 🟡 Implementada; validação automatizada pendente |
+| 6 | Inferência das empresas sem rótulo | ✅ Concluída (execução real validada) |
+| 7 | Exportação, testes e documentação final | ✅ Concluída (execução real validada; 4 testes automatizados passaram) |
 
 ### ⚠️ Pendências abertas (ler antes de continuar)
 
@@ -33,10 +33,10 @@ As previsões são sempre *estimativas*, nunca substituem o porte oficial.
 
 Aviso para a Etapa 4: funcionários têm cobertura de 0,08% no arquivo inteiro e 100% nas classes Médio e Grande já rotuladas. A decisão foi não usar essa coluna: ela existe nas empresas já anotadas e quase não existe nas que serão classificadas.
 
-### ▶️ Próximo passo
-Instalar Python 3.12, criar o ambiente virtual e validar as Etapas 6 e 7. As estimativas ficam sinalizadas
-para revisão manual porque a amostra é pequena e as probabilidades não foram calibradas; nenhum limiar de
-confiança foi inventado.
+### ▶️ Status e observações
+As Etapas 6 e 7 foram executadas na base real, e os quatro testes automatizados da exportação passaram.
+As estimativas permanecem sinalizadas para revisão manual porque a amostra é pequena e as probabilidades
+não foram calibradas; nenhum limiar de confiança foi inventado.
 
 ---
 
@@ -145,7 +145,7 @@ src/
   config.py                 # caminhos, aliases de colunas, classes, semente   [pronto]
   data/load_data.py         # leitura Excel/CSV, mapeamento e tipos            [pronto]
   data/validate_data.py     # validação de esquema e relatório de qualidade    [pronto]
-  pipeline.py               # coordenação das Etapas 2 a 7                  [parcial]
+  pipeline.py               # coordenação das Etapas 2 a 7                  [pronto]
   entities/aggregate_root.py        # Etapa 3 — uma linha por CNPJ raiz          [pronto]
   labeling/prepare_labels.py        # Etapa 3 — rótulo Médio/Grande              [pronto]
   preprocessing/build_features.py   # Etapa 4 — matriz de atributos              [pronto]
